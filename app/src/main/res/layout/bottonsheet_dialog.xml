@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bottomsheet_shape">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Here show the recent photos"
+            android:textColor="@color/grey">
+        </TextView>
+    </RelativeLayout>
+        <ImageButton
+            android:id="@+id/openAlbum"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:src="@drawable/album"
+            >
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/openCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:src="@drawable/camera">
+        </ImageButton>
+
+</LinearLayout>

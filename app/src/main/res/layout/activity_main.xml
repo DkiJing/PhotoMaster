@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<!--第一个界面-->
+<!--    id:addButton 打开图片按钮 点击以后弹出底部提示框-->
+<!--    id:openPhoto 解释文字 点击图片按钮时字体颜色变化-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="1">
 
-    <TextView
+
+    <Button
+        android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/bg_selector"
+        android:layout_gravity="center"
+        android:text="@string/add"
+        android:paddingHorizontal="0dp"
+        android:fontFamily="sans-serif"
+        android:textSize="70sp"
+        android:textColor="@drawable/text_selector"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        />
+    <TextView
+        android:id="@+id/openPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:text="@string/openPhoto"
+        android:textSize="14sp"
+        android:textColor="@color/main"
+        android:shadowColor="@color/main"
+        android:shadowDx="0"
+        android:shadowDy="40"
+        android:shadowRadius="30"
+         />
+
+
+</LinearLayout>

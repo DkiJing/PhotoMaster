@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--保存界面-->
+<!--    id:final_backButton 点击返回上一界面-->
+<!--    其他两张写死的imageView不需要修改-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+    <ImageButton
+        android:id="@+id/final_backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:src="@drawable/back"
+        android:layout_gravity="left"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp">
+    </ImageButton>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/save"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        >
+    </ImageView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
+            android:elevation="20dp"
+            ></ImageView>
+    </LinearLayout>
+</LinearLayout>
