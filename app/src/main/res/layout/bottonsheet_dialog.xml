@@ -23,6 +23,7 @@
             android:scaleType="centerCrop"
             android:layout_gravity="center"
             android:background="@color/white"
+            android:onClick="openAlbum"
             android:src="@drawable/album"
             >
         </ImageButton>
@@ -33,6 +34,7 @@
             android:scaleType="centerCrop"
             android:layout_gravity="center"
             android:background="@color/white"
+            android:onClick="openCamera"
             android:src="@drawable/camera">
         </ImageButton>
 
