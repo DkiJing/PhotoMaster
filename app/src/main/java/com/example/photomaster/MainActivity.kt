@@ -3,8 +3,8 @@ package com.example.photomaster
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -15,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
-//import kotlinx.android.synthetic.main.bottonsheet_dialog.*
-
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,16 +27,20 @@ class MainActivity : AppCompatActivity() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), MainActivity.REQUEST_CODE)
+        } else if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MainActivity.REQUEST_CODE)
         }
     }
 
     fun openCamera(v: View) {
-        intent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             return
+        } else {
+            startActivityForResult(intent, TAKE_PHOTO_ID)
         }
-        startActivity(intent)
     }
 
     fun openAlbum(v: View) {
@@ -56,6 +58,14 @@ class MainActivity : AppCompatActivity() {
                     val image = data.data
                     val source = ImageDecoder.createSource(contentResolver, image!!)
                     val bitmap = ImageDecoder.decodeBitmap(source)
+                    Toast.makeText(this, "A photo is selected.", Toast.LENGTH_SHORT).show()
+                    // TODO set bitmap on the BitMap UI
+                }
+            }
+            if(requestCode == TAKE_PHOTO_ID) {
+                if(data != null && data.hasExtra("data")) {
+                    val bitmap = data.getParcelableExtra<Bitmap>("data")
+                    Toast.makeText(this, "A photo is taken.", Toast.LENGTH_LONG).show()
                     // TODO set bitmap on the BitMap UI
                 }
             }
@@ -64,6 +74,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAKE_PHOTO_ID = 0
         private const val REQUEST_CODE = 1
         private const val IMAGE_GALLERY_REQUEST_CODE = 2
         private val PERMISSIONS_REQ = arrayOf(
