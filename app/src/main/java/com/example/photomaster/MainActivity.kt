@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MainActivity.REQUEST_CODE)
         }
+
     }
 
     fun openCamera(v: View) {
