@@ -2,7 +2,9 @@ package com.example.photomaster
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.bottonsheet_dialog.*
@@ -26,11 +28,12 @@ class bottomSheet : BottomSheetDialogFragment() {
     }
 
     private val images: ArrayList<ImageModel>
+        @RequiresApi(Build.VERSION_CODES.Q)
         @SuppressLint("Recycle")
         get() {
             val models = ArrayList<ImageModel>()
             val projection = arrayOf(MediaStore.Images.Media.DATA,
-                    MediaStore.Images.Media.DATE_MODIFIED)
+                    MediaStore.Images.Media.DATE_TAKEN)
 
             val cursor = context!!.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     projection,
