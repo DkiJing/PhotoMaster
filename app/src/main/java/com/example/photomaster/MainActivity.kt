@@ -51,6 +51,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun selectPhoto(v: View) {
+        // TODO send intent to the editPhoto activity
+        Toast.makeText(this, "A recent photo is selected.", Toast.LENGTH_SHORT).show()
+    }
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(resultCode == RESULT_OK) {
@@ -66,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             if(requestCode == TAKE_PHOTO_ID) {
                 if(data != null && data.hasExtra("data")) {
                     val bitmap = data.getParcelableExtra<Bitmap>("data")
-                    Toast.makeText(this, "A photo is taken.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "A photo is taken.", Toast.LENGTH_SHORT).show()
                     // TODO set bitmap on the BitMap UI
                 }
             }
