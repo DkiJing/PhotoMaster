@@ -7,7 +7,6 @@
 
     <ImageView
         android:id="@+id/image"
-        android:src="@drawable/china"
         android:layout_width="60dp"
         android:layout_height="60dp" />
 
