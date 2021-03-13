@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <!--    返回上一步按钮-->
+    <ImageButton
+        android:id="@+id/undoBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/undo_setting"
+        android:scaleType="fitXY"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        >
+    </ImageButton>
+    <!--返回前一步按钮-->
+    <ImageButton
+        android:id="@+id/redoBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/redo_setting"
+        android:scaleType="fitXY"
+        app:layout_constraintLeft_toLeftOf="@id/undoBtn"
+        app:layout_constraintTop_toTopOf="parent">
+    </ImageButton>
+    <!--更多按钮-->
+    <ImageButton
+        android:id="@+id/moreBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/more_setting"
+        android:scaleType="fitXY"
+        >
+    </ImageButton>
+
+    <!--需要编辑的图片-->
+    <ImageView
+        android:id="@+id/editImg"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@color/grey"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="200dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+    </ImageView>
+    <!--    对比按钮-->
+    <ImageButton
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:id="@+id/seeBtn"
+        app:layout_constraintTop_toBottomOf="@+id/editImg"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="fitXY"
+        android:background="@drawable/see_setting"
+        ></ImageButton>
+    <!--    底部的状态栏-->
+<!--还没有做完不要动哟-->
+    <com.richard.tabbar.TabBarView
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/tbv_one"
+        app:tbv_isApplyContentRadius="true"
+        app:tbv_width_isAverage="true"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        app:tbv_blank_view_color="@color/main"
+        app:tbv_blank_view_width="0dp"
+        app:tbv_content_back_color="@color/white"
+        app:tbv_default_checked_item_position="0"
+        app:tbv_item_checked_back_color="@color/white"
+        app:tbv_item_uncheck_back_color="@color/white"
+        app:tbv_padding_left_right="20dp"
+        app:tbv_topLeftRadius="40dp"
+        app:tbv_topRightRadius="40dp"
+        app:tbv_text_checked_color="@color/main"
+        app:tbv_text_size="16dp"
+        app:tbv_text_uncheck_color="@color/grey"
+        app:tbv_is_bottom_bar_style="true"
+        android:outlineSpotShadowColor="@color/main"
+        app:tbv_texts="Filter|Tools|Export" />
+</androidx.constraintlayout.widget.ConstraintLayout>
