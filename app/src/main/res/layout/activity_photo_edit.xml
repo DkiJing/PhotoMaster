@@ -58,7 +58,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="300dp"
+        android:layout_marginBottom="200dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp">
     </ImageView>
@@ -73,31 +73,67 @@
         android:layout_marginTop="20dp"
         android:scaleType="fitXY"
         android:background="@drawable/see_setting"
-        ></ImageButton>
+        />
     <!--    底部的状态栏-->
-<!--还没有做完不要动哟-->
-    <com.richard.tabbar.TabBarView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:translationZ="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0F9D58"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:id="@+id/tbv_one"
-        app:tbv_isApplyContentRadius="true"
-        app:tbv_width_isAverage="true"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@color/white"
+            app:tabIndicatorColor="@color/main"
+            app:tabIndicatorHeight="2dp"
+            android:translationZ="10dp"
+            app:tabSelectedTextColor="@color/main"
+            app:tabTextColor="@color/grey"
+            app:tabMode="fixed"/>
+        >
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:translationZ="9dp"
+        android:id="@+id/tab_viewpager"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        app:tbv_blank_view_color="@color/main"
-        app:tbv_blank_view_width="0dp"
-        app:tbv_content_back_color="@color/white"
-        app:tbv_default_checked_item_position="0"
-        app:tbv_item_checked_back_color="@color/white"
-        app:tbv_item_uncheck_back_color="@color/white"
-        app:tbv_padding_left_right="20dp"
-        app:tbv_topLeftRadius="40dp"
-        app:tbv_topRightRadius="40dp"
-        app:tbv_text_checked_color="@color/main"
-        app:tbv_text_size="16dp"
-        app:tbv_text_uncheck_color="@color/grey"
-        app:tbv_is_bottom_bar_style="true"
-        android:outlineSpotShadowColor="@color/main"
-        app:tbv_texts="Filter|Tools|Export" />
+        android:layout_height="248dp"
+        android:layout_marginBottom="5dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+    </androidx.viewpager.widget.ViewPager>
+<!--还没有做完不要动哟-->
+
+<!--    <com.richard.tabbar.TabBarView-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        android:id="@+id/tbv_one"-->
+<!--        app:tbv_isApplyContentRadius="true"-->
+<!--        app:tbv_width_isAverage="true"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="30dp"-->
+<!--        app:tbv_blank_view_color="@color/main"-->
+<!--        app:tbv_blank_view_width="0dp"-->
+<!--        app:tbv_content_back_color="@color/white"-->
+<!--        app:tbv_default_checked_item_position="0"-->
+<!--        app:tbv_item_checked_back_color="@color/white"-->
+<!--        app:tbv_item_uncheck_back_color="@color/white"-->
+<!--        app:tbv_padding_left_right="20dp"-->
+<!--        app:tbv_topLeftRadius="40dp"-->
+<!--        app:tbv_topRightRadius="40dp"-->
+<!--        app:tbv_text_checked_color="@color/main"-->
+<!--        app:tbv_text_size="16dp"-->
+<!--        app:tbv_text_uncheck_color="@color/grey"-->
+<!--        app:tbv_is_bottom_bar_style="true"-->
+<!--        android:outlineSpotShadowColor="@color/main"-->
+<!--        app:tbv_texts="Filter|Tools|Export" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
