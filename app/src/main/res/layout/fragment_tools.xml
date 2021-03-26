@@ -38,6 +38,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="100dp"
+        android:onClick="detectEmotion"
         android:id="@+id/mangoBtn"
         />
     <TextView
@@ -46,6 +47,7 @@
         android:text="@string/mango_face"
         android:textColor="@color/main"
         android:textSize="12sp"
+        android:onClick="detectEmotion"
         app:layout_constraintEnd_toEndOf="@id/mangoBtn"
         app:layout_constraintStart_toStartOf="@id/mangoBtn"
         app:layout_constraintTop_toBottomOf="@+id/enhanceBtn">
