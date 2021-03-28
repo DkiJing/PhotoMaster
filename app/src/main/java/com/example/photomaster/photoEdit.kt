@@ -31,6 +31,11 @@ class photoEdit : AppCompatActivity() {
     private var superResolutionNativeHandle: Long = 0
     private lateinit var model: MappedByteBuffer
     private val MODEL_NAME = "ESRGAN.tflite"
+    private val LR_IMAGE_HEIGHT = 50
+    private val LR_IMAGE_WIDTH = 50
+    private val UPSCALE_FACTOR = 4
+    private val SR_IMAGE_HEIGHT = LR_IMAGE_HEIGHT * UPSCALE_FACTOR
+    private val SR_IMAGE_WIDTH = LR_IMAGE_WIDTH * UPSCALE_FACTOR
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +57,6 @@ class photoEdit : AppCompatActivity() {
     }
 
     fun detectEmotion(v: View) {
-        Toast.makeText(v.context, "Detecting emotion...", Toast.LENGTH_SHORT).show()
         val mResultBitmap = Emojifier.detectFaces(v.context, picture)
         editImg.setImageBitmap(mResultBitmap)
     }
@@ -67,18 +71,18 @@ class photoEdit : AppCompatActivity() {
         }
 
         val lowResRGB = IntArray(picture.width * picture.height)
+        val resizedPicture = Bitmap.createScaledBitmap(picture, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT, true)
+        resizedPicture.getPixels(lowResRGB, 0, LR_IMAGE_WIDTH, 0, 0, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT)
         val superResRGB = doSuperResolution(lowResRGB)
         if (superResRGB == null) {
             Toast.makeText(v.context, "Enhance resolution failed!", Toast.LENGTH_SHORT).show()
             return
         }
-        Log.d("TAG", "image width: " + picture.width)
-        Log.d("TAG", "image height" + picture.height)
         // Force refreshing the ImageView
         editImg.setImageDrawable(null)
-        val srImgBitmap = Bitmap.createBitmap(superResRGB, 200, 200, Bitmap.Config.ARGB_8888)
+        var srImgBitmap = Bitmap.createBitmap(superResRGB, SR_IMAGE_WIDTH, SR_IMAGE_HEIGHT, Bitmap.Config.ARGB_8888)
+        srImgBitmap = Bitmap.createScaledBitmap(srImgBitmap, picture.width, picture.height, true)
         editImg.setImageBitmap(srImgBitmap)
-        Log.d("TAG", "Finish!!")
     }
 
     @WorkerThread
