@@ -3,6 +3,7 @@ package com.example.photomaster
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -17,6 +18,7 @@ import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
+
 class photoEdit : AppCompatActivity() {
     companion object {
         init {
@@ -30,6 +32,7 @@ class photoEdit : AppCompatActivity() {
     private var useGPU = true
     private var superResolutionNativeHandle: Long = 0
     private lateinit var model: MappedByteBuffer
+    private lateinit var path: Uri
     private val MODEL_NAME = "ESRGAN.tflite"
     private val LR_IMAGE_HEIGHT = 50
     private val LR_IMAGE_WIDTH = 50
@@ -51,7 +54,7 @@ class photoEdit : AppCompatActivity() {
 
         // load image from camera or album
         bundle = intent.extras
-        val path: Uri = bundle?.get("imgUri") as Uri
+        path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
         picture = editImg.drawable.toBitmap()
     }
@@ -70,7 +73,7 @@ class photoEdit : AppCompatActivity() {
             Toast.makeText(v.context, "TFLite interpreter failed to create!", Toast.LENGTH_SHORT).show()
         }
 
-        val lowResRGB = IntArray(picture.width * picture.height)
+        val lowResRGB = IntArray(LR_IMAGE_WIDTH * LR_IMAGE_HEIGHT)
         val resizedPicture = Bitmap.createScaledBitmap(picture, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT, true)
         resizedPicture.getPixels(lowResRGB, 0, LR_IMAGE_WIDTH, 0, 0, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT)
         val superResRGB = doSuperResolution(lowResRGB)
@@ -78,11 +81,21 @@ class photoEdit : AppCompatActivity() {
             Toast.makeText(v.context, "Enhance resolution failed!", Toast.LENGTH_SHORT).show()
             return
         }
+
         // Force refreshing the ImageView
         editImg.setImageDrawable(null)
         var srImgBitmap = Bitmap.createBitmap(superResRGB, SR_IMAGE_WIDTH, SR_IMAGE_HEIGHT, Bitmap.Config.ARGB_8888)
-        srImgBitmap = Bitmap.createScaledBitmap(srImgBitmap, picture.width, picture.height, true)
+
+        // Get the scaled size of image
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val scaledWidth = displayMetrics.widthPixels
+        val scaledHeight = SR_IMAGE_HEIGHT * (scaledWidth / SR_IMAGE_WIDTH)
+        srImgBitmap = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
+
+        // Set the enhanced and scaled image to the image view.
         editImg.setImageBitmap(srImgBitmap)
+        Log.d("TAG", "Finish!!!")
     }
 
     @WorkerThread

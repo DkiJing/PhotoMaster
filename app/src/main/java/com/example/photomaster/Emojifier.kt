@@ -14,7 +14,8 @@ class Emojifier {
     companion object {
         private const val SMILING_PROB_THRESHOLD = .1
         private const val EYE_OPEN_PROB_THRESHOLD = .5
-        private const val EMOJI_SCALE_FACTOR = .9f
+        private const val EMOJI_SCALE_WIDTH_FACTOR = .9f
+        private const val EMOJI_SCALE_HEIGHT_FACTOR = 1.05f
 
         fun detectFaces(c: Context, picture: Bitmap): Bitmap {
             val detector = FaceDetector.Builder(c)
@@ -89,9 +90,8 @@ class Emojifier {
         private fun addEmojiToFace(backGroundBitmap: Bitmap, emojiBitmap: Bitmap, face: Face): Bitmap {
             var emoji = emojiBitmap
             val resultBitmap = Bitmap.createBitmap(backGroundBitmap.width, backGroundBitmap.height, backGroundBitmap.config)
-            val scaleFactor = EMOJI_SCALE_FACTOR
-            val newEmojiWidth = (face.width * scaleFactor).toInt()
-            val newEmojiHeight = ((emoji.height * newEmojiWidth / emoji.width) * scaleFactor).toInt()
+            val newEmojiWidth = (face.width * EMOJI_SCALE_WIDTH_FACTOR).toInt()
+            val newEmojiHeight = (face.height * EMOJI_SCALE_HEIGHT_FACTOR).toInt()
 
             emoji = Bitmap.createScaledBitmap(emoji, newEmojiWidth, newEmojiHeight, false)
 
