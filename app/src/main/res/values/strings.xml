@@ -17,4 +17,5 @@
     <string name="crop">Crop</string>
     <string name="mango_face">Mango Face</string>
     <string name="enhance">Enhance</string>
+    <string name="roboto_medium">sans-serif-medium</string>
 </resources>

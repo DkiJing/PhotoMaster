@@ -1,64 +1,102 @@
 package com.example.photomaster
 
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.photomaster.filters.FilterListFragmentListener
+import com.example.photomaster.filters.FilterViewAdapter
+import com.example.photomaster.util.BitmapUtils
+import com.example.photomaster.util.SpacesItemDecoration
+import com.zomato.photofilters.FilterPack
+import com.zomato.photofilters.imageprocessors.Filter
+import com.zomato.photofilters.utils.ThumbnailItem
+import com.zomato.photofilters.utils.ThumbnailsManager
 
 /**
- * A simple [Fragment] subclass.
+ * A simple [filterFragment] subclass.
  * Use the [filterFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class filterFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments!!.getString(ARG_PARAM1)
-            mParam2 = arguments!!.getString(ARG_PARAM2)
+class filterFragment : Fragment(), FilterListFragmentListener {
+
+    private var listener: FilterListFragmentListener? = null
+    private lateinit var adapter: FilterViewAdapter
+    private lateinit var filterItemList: MutableList<ThumbnailItem>
+    private lateinit var filterListView: RecyclerView
+
+    fun setListener(listener: FilterListFragmentListener) {
+        this.listener = listener
+    }
+
+    override fun onFilterSelected(filter: Filter) {
+        if(listener != null) {
+            listener!!.onFilterSelected(filter)
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filter, container, false)
+        val view = inflater.inflate(R.layout.fragment_filter, container, false)
+        filterItemList = ArrayList()
+        adapter = FilterViewAdapter(activity!!, filterItemList, this)
+        filterListView = view.findViewById(R.id.filterListView)
+        filterListView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        filterListView.itemAnimator = DefaultItemAnimator()
+        val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics).toInt()
+        filterListView.addItemDecoration(SpacesItemDecoration(space))
+        filterListView.adapter = adapter
+        displayImage(null)
+        return view
     }
 
-    companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
+    private fun displayImage(bitmap: Bitmap?) {
+        val runnable = Runnable {
+            val image: Bitmap?
+            if (bitmap == null) {
+                image = BitmapUtils.getBitmapFromAssets(activity!!, "imgsample.jpg", 100, 100)
+            } else {
+                image = Bitmap.createScaledBitmap(bitmap, 100, 100, false)
+            }
+            if(image == null) {
+                return@Runnable
+            }
+            ThumbnailsManager.clearThumbs()
+            filterItemList.clear()
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LoginFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String?, param2: String?): filterFragment {
-            val fragment = filterFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
-            return fragment
+            // add normal bitmap first
+            val imageFilterItem = ThumbnailItem()
+            imageFilterItem.image = image
+            imageFilterItem.filterName = "Normal"
+            ThumbnailsManager.addThumb(imageFilterItem)
+
+            // add filter pack
+            val filters = FilterPack.getFilterPack(activity!!)
+            for (filter in filters) {
+                val item = ThumbnailItem()
+                item.image = image
+//                item.filter = filter
+                item.filterName = filter.name
+                ThumbnailsManager.addThumb(item)
+            }
+
+            // UI drawing
+            filterItemList.addAll(ThumbnailsManager.processThumbs(activity))
+            activity!!.runOnUiThread {
+                adapter.notifyDataSetChanged()
+            }
         }
+        Thread(runnable).start()
     }
 }
-//fun newInstance(sectionNumber: Int): filterFragment {
-//    return filterFragment().apply {
-//    }

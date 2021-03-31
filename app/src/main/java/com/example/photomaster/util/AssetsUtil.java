@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-package com.example.photomaster;
+package com.example.photomaster.util;
 
 import static android.content.res.AssetManager.ACCESS_BUFFER;
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;

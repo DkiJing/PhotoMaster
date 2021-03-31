@@ -11,6 +11,7 @@ import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
+import com.example.photomaster.util.AssetsUtil
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.FileInputStream
@@ -26,8 +27,12 @@ class photoEdit : AppCompatActivity() {
         }
     }
 
+    // initialize fragment
+    private lateinit var filteredFragment: filterFragment
+
     var viewPagerAdapter: ViewPagerAdapter? = null
     lateinit var picture: Bitmap
+    lateinit var filteredPicture: Bitmap
     var bundle: Bundle? = null
     private var useGPU = true
     private var superResolutionNativeHandle: Long = 0
@@ -57,6 +62,7 @@ class photoEdit : AppCompatActivity() {
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
         picture = editImg.drawable.toBitmap()
+        filteredPicture = Bitmap.createScaledBitmap(picture, 300, 300, true)
     }
 
     fun detectEmotion(v: View) {

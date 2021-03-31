@@ -16,4 +16,11 @@
     <color name="shadow">#66E6B9</color>
     <color name="main">#55D6A2 </color>
     <color name="grey">#A5ACA9</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#009688</color>
+    <color name="color_option_menu">#FF3990</color>
+    <color name="filter_label_normal">#8A8889</color>
+    <color name="filter_label_selected">#221F20</color>
 </resources>
