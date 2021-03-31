@@ -22,6 +22,7 @@ class FilterViewAdapter(val c: Context, val filterItemList: List<ThumbnailItem>,
         return filterItemList.size
     }
 
+    // 加载filterItemList的数据到视图中
     override fun onBindViewHolder(holder: FilterViewHolder, position: Int) {
         holder.mImage.load(filterItemList[position].image)
         holder.mFilterName.text = filterItemList[position].filterName

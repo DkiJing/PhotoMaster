@@ -41,22 +41,21 @@ class filterFragment : Fragment(), FilterListFragmentListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_filter, container, false)
+        // 初始化filterItemList, adapter, filterListView
         filterItemList = ArrayList()
         adapter = FilterViewAdapter(activity!!, filterItemList, this)
         filterListView = view.findViewById(R.id.filterListView)
+        // 设置filterListView为横向的
         filterListView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         filterListView.itemAnimator = DefaultItemAnimator()
         val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics).toInt()
         filterListView.addItemDecoration(SpacesItemDecoration(space))
         filterListView.adapter = adapter
+        // 展示图片，默认为assests中的图片
         displayImage(null)
         return view
     }
@@ -65,6 +64,7 @@ class filterFragment : Fragment(), FilterListFragmentListener {
         val runnable = Runnable {
             val image: Bitmap?
             if (bitmap == null) {
+                // 加载 assests文件夹中的imgsample.jpg
                 image = BitmapUtils.getBitmapFromAssets(activity!!, "imgsample.jpg", 100, 100)
             } else {
                 image = Bitmap.createScaledBitmap(bitmap, 100, 100, false)
@@ -86,6 +86,7 @@ class filterFragment : Fragment(), FilterListFragmentListener {
             for (filter in filters) {
                 val item = ThumbnailItem()
                 item.image = image
+                // 如果在这里加入滤镜就会闪退
 //                item.filter = filter
                 item.filterName = filter.name
                 ThumbnailsManager.addThumb(item)

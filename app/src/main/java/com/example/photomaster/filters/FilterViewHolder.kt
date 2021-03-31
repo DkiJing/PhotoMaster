@@ -6,6 +6,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.photomaster.R
 
+/**
+ * FilterViewHolder绑定视图filter_item.xml
+ */
 class FilterViewHolder(v: View): RecyclerView.ViewHolder(v) {
     var mImage: ImageView
     var mFilterName: TextView
