@@ -36,6 +36,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
 
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
+    lateinit var resultPicture: Bitmap
     var bundle: Bundle? = null
     private var useGPU = true
     private var superResolutionNativeHandle: Long = 0
@@ -63,11 +64,13 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
         picture = editImg.drawable.toBitmap()
+        resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
     }
 
     override fun onFilterSelected(filter: Filter) {
         filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
-        editImg.setImageBitmap(filter.processFilter(filteredPicture))
+        resultPicture = filter.processFilter(filteredPicture)
+        editImg.setImageBitmap(resultPicture)
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
@@ -81,11 +84,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         viewPagerAdapter.addFragment(toolsFragment, "Tools")
         viewPagerAdapter.addFragment(exportFragment, "Export")
         viewPager.adapter = viewPagerAdapter
-        Log.d("TAG", filteredFragment.toString())
     }
 
     fun detectEmotion(v: View) {
-        val mResultBitmap = Emojifier.detectFaces(v.context, picture)
+        val mResultBitmap = Emojifier.detectFaces(v.context, resultPicture)
         editImg.setImageBitmap(mResultBitmap)
     }
 
@@ -99,7 +101,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         }
 
         val lowResRGB = IntArray(LR_IMAGE_WIDTH * LR_IMAGE_HEIGHT)
-        val resizedPicture = Bitmap.createScaledBitmap(picture, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT, true)
+        val resizedPicture = Bitmap.createScaledBitmap(resultPicture, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT, true)
         resizedPicture.getPixels(lowResRGB, 0, LR_IMAGE_WIDTH, 0, 0, LR_IMAGE_WIDTH, LR_IMAGE_HEIGHT)
         val superResRGB = doSuperResolution(lowResRGB)
         if (superResRGB == null) {
