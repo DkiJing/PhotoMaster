@@ -60,7 +60,7 @@ class filterFragment : Fragment(), FilterListFragmentListener {
         return view
     }
 
-    private fun displayImage(bitmap: Bitmap?) {
+    fun displayImage(bitmap: Bitmap?) {
         val runnable = Runnable {
             val image: Bitmap?
             if (bitmap == null) {
@@ -86,8 +86,7 @@ class filterFragment : Fragment(), FilterListFragmentListener {
             for (filter in filters) {
                 val item = ThumbnailItem()
                 item.image = image
-                // 如果在这里加入滤镜就会闪退
-//                item.filter = filter
+                item.filter = filter
                 item.filterName = filter.name
                 ThumbnailsManager.addThumb(item)
             }

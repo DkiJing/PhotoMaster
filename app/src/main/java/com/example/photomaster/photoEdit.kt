@@ -11,26 +11,27 @@ import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
+import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.google.android.material.tabs.TabLayout
+import com.zomato.photofilters.imageprocessors.Filter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
-
-class photoEdit : AppCompatActivity() {
+class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     companion object {
         init {
             System.loadLibrary("SuperResolution")
+            System.loadLibrary("NativeImageProcessor")
         }
     }
 
     // initialize fragment
     private lateinit var filteredFragment: filterFragment
 
-    var viewPagerAdapter: ViewPagerAdapter? = null
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
     var bundle: Bundle? = null
@@ -50,10 +51,8 @@ class photoEdit : AppCompatActivity() {
         setContentView(R.layout.activity_photo_edit)
         val viewPager: ViewPager = findViewById(R.id.tab_viewpager)
         val tabLayout: TabLayout = findViewById(R.id.tabs)
-        viewPagerAdapter = ViewPagerAdapter(
-                supportFragmentManager)
-        viewPager.adapter = viewPagerAdapter
-        //viewPager.setAdapter(viewPagerAdapter)
+
+        setupViewPager(viewPager)
         // It is used to join TabLayout with ViewPager.
         tabLayout.setupWithViewPager(viewPager)
 
@@ -62,7 +61,19 @@ class photoEdit : AppCompatActivity() {
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
         picture = editImg.drawable.toBitmap()
-        filteredPicture = Bitmap.createScaledBitmap(picture, 300, 300, true)
+    }
+
+    override fun onFilterSelected(filter: Filter) {
+        filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+        editImg.setImageBitmap(filter.processFilter(filteredPicture))
+    }
+
+    private fun setupViewPager(viewPager: ViewPager) {
+        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        filteredFragment = filterFragment()
+        filteredFragment.setListener(this)
+        Log.d("TAG", filteredFragment.toString())
+        viewPager.adapter = viewPagerAdapter
     }
 
     fun detectEmotion(v: View) {
