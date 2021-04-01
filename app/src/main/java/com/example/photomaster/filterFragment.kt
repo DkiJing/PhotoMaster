@@ -73,7 +73,9 @@ class filterFragment : Fragment(), FilterListFragmentListener {
                 return@Runnable
             }
             ThumbnailsManager.clearThumbs()
-            filterItemList.clear()
+            if(::filterItemList.isInitialized) {
+                filterItemList.clear()
+            }
 
             // add normal bitmap first
             val imageFilterItem = ThumbnailItem()
@@ -92,9 +94,11 @@ class filterFragment : Fragment(), FilterListFragmentListener {
             }
 
             // UI drawing
-            filterItemList.addAll(ThumbnailsManager.processThumbs(activity))
-            activity!!.runOnUiThread {
-                adapter.notifyDataSetChanged()
+            if(::filterItemList.isInitialized) {
+                filterItemList.addAll(ThumbnailsManager.processThumbs(activity))
+                activity!!.runOnUiThread {
+                    adapter.notifyDataSetChanged()
+                }
             }
         }
         Thread(runnable).start()

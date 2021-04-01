@@ -31,6 +31,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
 
     // initialize fragment
     private lateinit var filteredFragment: filterFragment
+    private lateinit var toolsFragment: toolsFragment
+    private lateinit var exportFragment: exportFragment
 
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
@@ -72,8 +74,14 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         filteredFragment = filterFragment()
         filteredFragment.setListener(this)
-        Log.d("TAG", filteredFragment.toString())
+        toolsFragment = toolsFragment()
+        exportFragment = exportFragment()
+
+        viewPagerAdapter.addFragment(filteredFragment, "Filter")
+        viewPagerAdapter.addFragment(toolsFragment, "Tools")
+        viewPagerAdapter.addFragment(exportFragment, "Export")
         viewPager.adapter = viewPagerAdapter
+        Log.d("TAG", filteredFragment.toString())
     }
 
     fun detectEmotion(v: View) {
