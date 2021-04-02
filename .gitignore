@@ -12,7 +12,7 @@
 *.class
 
 # Local gradle files
-*.gradle
+.gradle
 
 # Generated files
 bin/
