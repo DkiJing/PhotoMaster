@@ -13,6 +13,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.util.AssetsUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.zomato.photofilters.imageprocessors.Filter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
@@ -87,12 +88,16 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     }
 
     fun detectEmotion(v: View) {
-        val mResultBitmap = Emojifier.detectFaces(v.context, resultPicture)
-        editImg.setImageBitmap(mResultBitmap)
+        resultPicture = Emojifier.detectFaces(v.context, resultPicture)
+        editImg.setImageBitmap(resultPicture)
     }
 
     fun enhanceResolution(v: View) {
-        Toast.makeText(v.context, "Enhance", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(v.context, "Enhance", Toast.LENGTH_SHORT).show()
+        if(picture.width >= 500 || picture.height >= 500) {
+            Toast.makeText(v.context, "Please select an image with lower resolution.", Toast.LENGTH_SHORT).show()
+            return
+        }
         if (superResolutionNativeHandle == 0L) {
             superResolutionNativeHandle = initTFLiteInterpreter(useGPU)
         }
@@ -118,10 +123,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val scaledWidth = displayMetrics.widthPixels
         val scaledHeight = SR_IMAGE_HEIGHT * (scaledWidth / SR_IMAGE_WIDTH)
-        srImgBitmap = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
+        resultPicture = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
 
         // Set the enhanced and scaled image to the image view.
-        editImg.setImageBitmap(srImgBitmap)
+        editImg.setImageBitmap(resultPicture)
         Log.d("TAG", "Finish!!!")
     }
 
@@ -168,5 +173,20 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     ): Long
 
     private external fun deinitFromJNI(superResolutionNativeHandle: Long)
+
+
+    //show info dialog
+    fun openInfo(view: View?){
+        MaterialAlertDialogBuilder(this)
+            .setTitle("About us")
+            .setMessage(R.string.info_msg)
+            .setNegativeButton("OK", null)
+            .show()
+    }
+
+    //photo crop
+    fun startCrop(){
+        print("startcrop")
+    }
 
 }
