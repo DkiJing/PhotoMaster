@@ -11,6 +11,9 @@
 # Java class files
 *.class
 
+# Local gradle files
+*.gradle
+
 # Generated files
 bin/
 gen/

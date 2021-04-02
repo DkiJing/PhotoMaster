@@ -3,6 +3,7 @@ package com.example.photomaster
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -15,12 +16,14 @@ import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
+import com.yalantis.ucrop.UCrop
 import com.zomato.photofilters.imageprocessors.Filter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+
 
 class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     companion object {
@@ -38,6 +41,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
     lateinit var resultPicture: Bitmap
+
+    lateinit var cropPicture: Bitmap
+
     var bundle: Bundle? = null
     private var useGPU = true
     private var superResolutionNativeHandle: Long = 0
@@ -187,6 +193,20 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     //photo crop
     fun startCrop(){
         print("startcrop")
+
+        //处理后图片的uri,此时cropPicture = null
+        val cropUri = Uri.parse(
+            MediaStore.Images.Media.insertImage(
+                contentResolver,
+                cropPicture,
+                null,
+                null
+            )
+        )
+        //uCrop setting
+        val uCrop = UCrop.of( path, cropUri)
+        val options = UCrop.Options()
+        resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
     }
 
 }
