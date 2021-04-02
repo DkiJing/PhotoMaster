@@ -18,4 +18,8 @@
     <string name="mango_face">Mango Face</string>
     <string name="enhance">Enhance</string>
     <string name="roboto_medium">sans-serif-medium</string>
+    <string name="share_to_weibo">share to weibo</string>
+    <string name="share_to_qq_platform">Share to QQ</string>
+    <string name="share_to_wechat_platform">Share to Wechat</string>
+    <string name="download_to_phone">Download to phone</string>
 </resources>

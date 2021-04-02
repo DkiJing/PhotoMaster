@@ -106,7 +106,7 @@
         android:id="@+id/tab_viewpager"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="248dp"
+        android:layout_height="240dp"
         android:layout_marginBottom="5dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
