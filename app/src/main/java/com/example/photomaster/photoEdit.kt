@@ -92,7 +92,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     }
 
     fun enhanceResolution(v: View) {
-        Toast.makeText(v.context, "Enhance", Toast.LENGTH_SHORT).show()
+        if(picture.width >= 500 || picture.height >= 500) {
+            Toast.makeText(v.context, "Please select an image with lower resolution.", Toast.LENGTH_SHORT).show()
+            return
+        }
         if (superResolutionNativeHandle == 0L) {
             superResolutionNativeHandle = initTFLiteInterpreter(useGPU)
         }
