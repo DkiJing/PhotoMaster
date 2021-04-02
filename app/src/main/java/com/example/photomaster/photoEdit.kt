@@ -87,8 +87,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     }
 
     fun detectEmotion(v: View) {
-        val mResultBitmap = Emojifier.detectFaces(v.context, resultPicture)
-        editImg.setImageBitmap(mResultBitmap)
+        resultPicture = Emojifier.detectFaces(v.context, resultPicture)
+        editImg.setImageBitmap(resultPicture)
     }
 
     fun enhanceResolution(v: View) {
@@ -118,10 +118,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val scaledWidth = displayMetrics.widthPixels
         val scaledHeight = SR_IMAGE_HEIGHT * (scaledWidth / SR_IMAGE_WIDTH)
-        srImgBitmap = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
+        resultPicture = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
 
         // Set the enhanced and scaled image to the image view.
-        editImg.setImageBitmap(srImgBitmap)
+        editImg.setImageBitmap(resultPicture)
         Log.d("TAG", "Finish!!!")
     }
 
