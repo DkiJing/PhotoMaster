@@ -1,6 +1,6 @@
 package com.example.photomaster
 
-import android.graphics.Bitmap
+import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,6 +14,8 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.util.AssetsUtil
+import com.example.photomaster.util.BitmapUtils
+import com.example.photomaster.view.VariedGestureController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
@@ -56,6 +58,11 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     private val SR_IMAGE_HEIGHT = LR_IMAGE_HEIGHT * UPSCALE_FACTOR
     private val SR_IMAGE_WIDTH = LR_IMAGE_WIDTH * UPSCALE_FACTOR
 
+    //text
+    private var mVariedGestureController: VariedGestureController? = null
+    private var mAngle = 0
+    lateinit var mBitmap: Bitmap
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_edit)
@@ -66,12 +73,62 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         // It is used to join TabLayout with ViewPager.
         tabLayout.setupWithViewPager(viewPager)
 
+        //textEdit
+        viewPager.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.e("ViewPager", "position is $position")
+                //判断滑动后选择的页面设置相应的RadioButton被选中
+                if (position == 0 || position == 2) {
+                    resultPicture = BitmapUtils.captureView(root);
+                    editImg.setImageBitmap(resultPicture);
+                    custom.setBitmap(mBitmap);
+                }
+            }
+        })
+        //TextEdit
+
+
+
         // load image from camera or album
         bundle = intent.extras
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
         picture = editImg.drawable.toBitmap()
         resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+
+        //text
+        mBitmap = BitmapFactory.decodeResource(resources, R.drawable.trans_bg)
+            .copy(Bitmap.Config.ARGB_8888, true);
+
+        mVariedGestureController = VariedGestureController(this, custom)
+        mVariedGestureController!!.setVariedListener(object :
+            VariedGestureController.VariedListener {
+            override fun onScale(scaleX: Float, scaleY: Float) {
+                custom.setScale(scaleX, scaleY)
+            }
+
+            override fun onAngle(angle: Int) {
+                custom.setAngle(mAngle + angle)
+            }
+
+            override fun onAngleEnd(angle: Int) {
+                mAngle = mAngle + angle;
+            }
+
+            override fun onShift(horShift: Float, verShift: Float) {
+                custom.setShift(horShift, verShift)
+            }
+        })
     }
 
     override fun onFilterSelected(filter: Filter) {
@@ -208,5 +265,122 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         val options = UCrop.Options()
         resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
     }
+
+    /*
+
+fun textClick(v: View) {
+    val textEditorDialogFragment = TextEditorDialogFragment.show(this)
+    textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
+        val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
+        val canvas = Canvas(resultBitmap)
+
+        val scale = v.context.resources.displayMetrics.density
+        var paint = Paint(Paint.ANTI_ALIAS_FLAG);
+        // text color
+        paint.setColor(colorCode)
+        // text size in pixels
+        paint.setTextSize(30.0f * scale)
+        // text shadow
+        paint.setShadowLayer(1f, 0f, 1f, colorCode)
+        // draw text to the Canvas center
+        var bounds = Rect()
+        paint.getTextBounds(inputText, 0, inputText.length, bounds)
+        canvas.drawBitmap(picture, 0f, 0f, null)
+        var x = (resultBitmap.getWidth() - bounds.width())/6;
+        var y = (resultBitmap.getHeight() + bounds.height())/5;
+        canvas.drawText(
+                inputText,
+                x * scale,
+                y * scale,
+                paint
+        )
+
+        editImg.setImageBitmap(resultBitmap)
+    }
+}
+
+fun rotateClick(v: View) {
+//        dir = (dir - 90) % 360
+    dir = -90
+    val resultBitmap = convert(picture, dir)
+    if (resultBitmap != null) {
+        picture = resultBitmap
+        editImg.setImageBitmap(resultBitmap)
+    }
+}
+
+private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
+    val w = a.width
+    val h = a.height
+    val newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888) // 创建一个新的和SRC长度宽度一样的位图
+    val cv = Canvas(newb)
+    val m = Matrix()
+    m.postRotate((dir).toFloat()) //旋转-90度
+    val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
+    cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
+    return newb
+}
+ */
+
+
+
+    fun textClick(v: View) {
+        val textEditorDialogFragment = TextEditorDialogFragment.show(this)
+        textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
+//            val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
+            val resultBitmap = Bitmap.createBitmap(mBitmap.width, mBitmap.height, mBitmap.config)
+            val canvas = Canvas(resultBitmap)
+
+            val scale = v.context.resources.displayMetrics.density
+            var paint = Paint(Paint.ANTI_ALIAS_FLAG);
+            // text color
+            paint.setColor(colorCode)
+            // text size in pixels
+            paint.setTextSize(30.0f * scale)
+            // text shadow
+            paint.setShadowLayer(1f, 0f, 1f, colorCode)
+            // draw text to the Canvas center
+            var bounds = Rect()
+            paint.getTextBounds(inputText, 0, inputText.length, bounds)
+            canvas.drawBitmap(mBitmap, 0f, 0f, null)
+            var x = (resultBitmap.width - bounds.width()) / 7;
+            var y = (resultBitmap.height + bounds.height()) / 4;
+            canvas.drawText(
+                inputText,
+                x * scale,
+                y * scale,
+                paint
+            )
+
+            custom.setBitmap(resultBitmap);
+//            custom.setImageBitmap(resultBitmap)
+//            text.setText(inputText)
+//            text.setTextColor(colorCode)
+        }
+    }
+
+    fun rotateClick(v: View) {
+//        dir = (dir - 90) % 360
+        var dir = -90
+        val resultBitmap = convert(resultPicture, dir)
+        if (resultBitmap != null) {
+            resultPicture = resultBitmap
+            editImg.setImageBitmap(resultBitmap)
+        }
+    }
+
+    private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
+        val w = a.width
+        val h = a.height
+        val newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888) // 创建一个新的和SRC长度宽度一样的位图
+        val cv = Canvas(newb)
+        val m = Matrix()
+        m.postRotate((orientationDegree).toFloat()) //旋转-90度
+        val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
+        cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
+        return newb
+    }
+
+
 
 }

@@ -9,10 +9,13 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -226,5 +229,42 @@ public class BitmapUtils {
         } catch (IOException ex) {
             return null;
         }
+    }
+
+
+    public static Bitmap captureView(View view) throws Throwable {
+        Bitmap bm = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        view.draw(new Canvas(bm));
+        return bm;
+    }
+
+    public static Bitmap compoundBitmap(Bitmap downBitmap,Bitmap upBitmap)
+    {
+        Bitmap mBitmap = downBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        //如果遇到黑色，则显示downBitmap里面的颜色值，如果不是则显示upBitmap里面的颜色值
+        //循环获得bitmap所有像素点
+        int mBitmapWidth = mBitmap.getWidth();
+        int mBitmapHeight = mBitmap.getHeight();
+        //首先保证downBitmap和 upBitmap是一致的高宽大小
+        if(mBitmapWidth==upBitmap.getWidth() && mBitmapHeight==upBitmap.getHeight())
+        {
+            for (int i = 0; i < mBitmapHeight; i++) {
+                for (int j = 0; j < mBitmapWidth; j++) {
+                    //获得Bitmap 图片中每一个点的color颜色值
+                    //将需要填充的颜色值如果不是
+                    //在这说明一下 如果color 是全透明 或者全黑 返回值为 0
+                    //getPixel()不带透明通道 getPixel32()才带透明部分 所以全透明是0x00000000
+                    //而不透明黑色是0xFF000000 如果不计算透明部分就都是0了
+                    int color = upBitmap.getPixel(j, i);
+                    //将颜色值存在一个数组中 方便后面修改
+                    if (color != Color.BLACK) {
+                        mBitmap.setPixel(j, i, upBitmap.getPixel(j, i));  //将白色替换成透明色
+                    }
+                }
+            }
+        }
+//        downBitmap.recycle();
+//        upBitmap.recycle();
+        return mBitmap;
     }
 }

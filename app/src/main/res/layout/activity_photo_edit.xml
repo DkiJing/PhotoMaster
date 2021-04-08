@@ -44,7 +44,7 @@
         >
     </ImageButton>
 
-
+<!--
     <ImageView
         android:id="@+id/editImg"
         android:layout_width="match_parent"
@@ -62,6 +62,49 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp">
     </ImageView>
+!-->
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="200dp"
+        android:background="@color/white"
+        android:layout_marginTop="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <!--需要编辑的图片-->
+
+
+        <ImageView
+            android:id="@+id/editImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@color/grey"
+            android:scaleType="fitXY"
+            android:layout_centerInParent="true"
+            android:src="@drawable/imgsample"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+        <com.example.photomaster.view.CustomDrawView
+            android:id="@+id/custom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </RelativeLayout>
+
+
+
     <!--    对比按钮-->
     <ImageButton
         android:id="@+id/seeBtn"
