@@ -364,6 +364,7 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
 //        dir = (dir - 90) % 360
         var dir = -90
         val resultBitmap = convert(resultPicture, dir)
+
         if (resultBitmap != null) {
             resultPicture = resultBitmap
             editImg.setImageBitmap(resultBitmap)
@@ -407,6 +408,7 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
 
     fun reset(view: View) {
         editImg.setImageBitmap(picture)
+        resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         // remove fragment
         supportFragmentManager.beginTransaction()
             .remove(tuneBrightnessFragment)
