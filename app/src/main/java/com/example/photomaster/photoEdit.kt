@@ -186,7 +186,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val scaledWidth = displayMetrics.widthPixels
-        val scaledHeight = SR_IMAGE_HEIGHT * (scaledWidth / SR_IMAGE_WIDTH)
+        val scaledHeight = scaledWidth
         resultPicture = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
 
         // Set the enhanced and scaled image to the image view.

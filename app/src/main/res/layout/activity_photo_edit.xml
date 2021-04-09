@@ -58,11 +58,11 @@
         <!--需要编辑的图片-->
         <ImageView
             android:id="@+id/editImg"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:scaleType="fitXY"
             android:adjustViewBounds="true"
             android:background="@color/grey"
-            android:scaleType="fitXY"
             android:layout_centerInParent="true"
             android:src="@drawable/imgsample"
             app:layout_constraintBottom_toBottomOf="parent"
