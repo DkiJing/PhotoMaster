@@ -39,6 +39,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     private lateinit var filteredFragment: filterFragment
     private lateinit var toolsFragment: toolsFragment
     private lateinit var exportFragment: exportFragment
+    var tuneBrightnessFragment = tuneImageFragment()
+    var tuneContrastFragment = tuneImageFragment()
+    var tuneSaturationFragment = tuneImageFragment()
 
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
@@ -96,8 +99,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
             }
         })
         //TextEdit
-
-
 
         // load image from camera or album
         bundle = intent.extras
@@ -381,6 +382,48 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
         return newb
     }
 
+    fun tuneBrightness(view: View) {
+        // set brightness attribute
+        tuneBrightnessFragment.setTuneType("Brightness")
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneBrightnessFragment)
+            .commit()
+    }
 
+    fun tuneContrast(view: View) {
+        // set contrast attribute
+        tuneBrightnessFragment.setTuneType("Contrast")
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneContrastFragment)
+            .commit()
+    }
+    fun tuneSaturation(view: View) {
+        // set saturation attribute
+        tuneBrightnessFragment.setTuneType("Saturation")
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneSaturationFragment)
+            .commit()
+    }
 
+    fun reset(view: View) {
+        editImg.setImageBitmap(picture)
+        // remove fragment
+        supportFragmentManager.beginTransaction()
+            .remove(tuneBrightnessFragment)
+            .commit()
+        supportFragmentManager.beginTransaction()
+            .remove(tuneContrastFragment)
+            .commit()
+        supportFragmentManager.beginTransaction()
+            .remove(tuneSaturationFragment)
+            .commit()
+
+        // Reset fragment by recreate the object
+        tuneBrightnessFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Brightness")
+        tuneContrastFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Contrast")
+        tuneSaturationFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Saturation")
+    }
 }

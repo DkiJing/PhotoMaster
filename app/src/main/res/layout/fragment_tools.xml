@@ -11,12 +11,36 @@
         android:layout_width="46dp"
         android:layout_height="46dp"
         android:scaleType="fitXY"
-        android:background="@drawable/enhance_setting"
+        android:background="@drawable/reset_setting"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:onClick="reset"
+        android:id="@+id/resetBtn"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reset"
+        android:textColor="@color/main"
+        android:textSize="12sp"
+        android:onClick="reset"
+        app:layout_constraintEnd_toEndOf="@+id/resetBtn"
+        app:layout_constraintStart_toStartOf="@id/resetBtn"
+        app:layout_constraintTop_toBottomOf="@+id/resetBtn"
+        />
+
+    <ImageButton
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:scaleType="fitXY"
+        android:background="@drawable/enhance_setting"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toRightOf="@id/resetBtn"
+        android:layout_marginLeft="40dp"
         android:onClick="enhanceResolution"
         android:id="@+id/enhanceBtn"
         />
@@ -38,9 +62,8 @@
         android:background="@drawable/mango_setting"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="15dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
         android:onClick="detectEmotion"
         android:id="@+id/mangoBtn"
         />
@@ -113,6 +136,7 @@
         android:layout_marginTop="28dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:onClick="tuneBrightness"
         android:id="@+id/brightBtn" />
     <TextView
         android:layout_width="wrap_content"
@@ -123,6 +147,7 @@
         app:layout_constraintStart_toStartOf="@id/brightBtn"
         app:layout_constraintEnd_toEndOf="@id/brightBtn"
         android:layout_marginTop="4dp"
+        android:onClick="tuneBrightness"
         android:textColor="@color/grey">
     </TextView>
 
@@ -135,6 +160,7 @@
         android:layout_marginTop="28dp"
         app:layout_constraintLeft_toLeftOf="@id/brightBtn"
         app:layout_constraintRight_toRightOf="@id/saturationBtn"
+        android:onClick="tuneContrast"
         android:id="@+id/contrastBtn" />
     <TextView
         android:layout_width="wrap_content"
@@ -145,6 +171,7 @@
         app:layout_constraintStart_toStartOf="@id/contrastBtn"
         app:layout_constraintEnd_toEndOf="@id/contrastBtn"
         android:layout_marginTop="4dp"
+        android:onClick="tuneContrast"
         android:textColor="@color/grey">
     </TextView>
 
@@ -157,6 +184,7 @@
         android:layout_marginTop="28dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="40dp"
+        android:onClick="tuneSaturation"
         android:id="@+id/saturationBtn" />
     <TextView
         android:layout_width="wrap_content"
@@ -167,6 +195,7 @@
         app:layout_constraintStart_toStartOf="@id/saturationBtn"
         app:layout_constraintEnd_toEndOf="@id/saturationBtn"
         android:layout_marginTop="4dp"
+        android:onClick="tuneSaturation"
         android:textColor="@color/grey">
     </TextView>
     <!--第三行-->

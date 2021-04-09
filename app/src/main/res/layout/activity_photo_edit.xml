@@ -44,26 +44,6 @@
         >
     </ImageButton>
 
-<!--
-    <ImageView
-        android:id="@+id/editImg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/grey"
-        android:elevation="5dp"
-        android:src="@drawable/imgsample"
-        android:scaleType="fitXY"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="245dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
-    </ImageView>
-!-->
-
     <RelativeLayout
         android:id="@+id/root"
         android:layout_width="wrap_content"
@@ -76,8 +56,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <!--需要编辑的图片-->
-
-
         <ImageView
             android:id="@+id/editImg"
             android:layout_width="wrap_content"
@@ -90,20 +68,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></ImageView>
+            app:layout_constraintTop_toTopOf="parent">
+        </ImageView>
 
         <com.example.photomaster.view.CustomDrawView
             android:id="@+id/custom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
+            android:layout_alignBottom="@+id/editImg"
+            android:layout_marginBottom="-160dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </RelativeLayout>
-
-
 
     <!--    对比按钮-->
     <ImageButton
@@ -130,7 +108,6 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabBackground="@color/white"
@@ -142,8 +119,6 @@
             app:tabMode="fixed"/>
         >
     </com.google.android.material.appbar.AppBarLayout>
-
-
     <androidx.viewpager.widget.ViewPager
         android:translationZ="9dp"
         android:id="@+id/tab_viewpager"
@@ -154,5 +129,15 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
     </androidx.viewpager.widget.ViewPager>
-
+    <FrameLayout
+        android:id="@+id/tuneView"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentEnd="true"
+        app:layout_constraintBottom_toTopOf="@+id/tab_viewpager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/root"
+        app:layout_constraintTop_toTopOf="@+id/tab_viewpager"
+        >
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
