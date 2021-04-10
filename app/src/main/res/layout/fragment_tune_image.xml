@@ -13,20 +13,19 @@
     android:paddingTop="20dp">
 
     <SeekBar
-        android:id="@+id/seek_bar"
+        android:id="@+id/seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:max="100"
         android:min="-100"
-        android:progress="0"
-        />
+        android:progress="0" />
 
     <TextView
         android:id="@+id/minValueTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/seek_bar"
+        android:layout_below="@id/seekbar"
         android:text="-100"
         android:textColor="@color/black"
         android:textSize="10sp"
@@ -36,7 +35,7 @@
         android:id="@+id/currentValueTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/seek_bar"
+        android:layout_below="@id/seekbar"
         android:layout_centerInParent="true"
         android:text="0"
         android:textColor="@color/black"
@@ -48,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/seek_bar"
+        android:layout_below="@id/seekbar"
         android:text="100"
         android:textColor="@color/black"
         android:textSize="10sp"

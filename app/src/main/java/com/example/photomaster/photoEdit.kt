@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
+import com.example.photomaster.tune.TuneImageFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.example.photomaster.util.BitmapUtils
 import com.example.photomaster.view.VariedGestureController
@@ -20,14 +21,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
 import com.zomato.photofilters.imageprocessors.Filter
+import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
+import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
+import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
-
-class photoEdit : AppCompatActivity(), FilterListFragmentListener {
+class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFragmentListener {
     companion object {
         init {
             System.loadLibrary("SuperResolution")
@@ -48,6 +51,11 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     lateinit var resultPicture: Bitmap
 
     lateinit var cropPicture: Bitmap
+
+    // modified image values
+    private var brightnessFinal = 0
+    private var saturationFinal = 1.0f
+    private var contrastFinal = 1.0f
 
     var bundle: Bundle? = null
     private var useGPU = true
@@ -104,7 +112,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         bundle = intent.extras
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
+        // initialize bitmaps
         picture = editImg.drawable.toBitmap()
+        filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
 
         //text
@@ -133,6 +143,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     }
 
     override fun onFilterSelected(filter: Filter) {
+        resetControls()
         filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = filter.processFilter(filteredPicture)
         editImg.setImageBitmap(resultPicture)
@@ -386,6 +397,7 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
     fun tuneBrightness(view: View) {
         // set brightness attribute
         tuneBrightnessFragment.setTuneType("Brightness")
+        tuneBrightnessFragment.setListener(this)
         supportFragmentManager.beginTransaction()
             .replace(R.id.tuneView, tuneBrightnessFragment)
             .commit()
@@ -393,32 +405,34 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
 
     fun tuneContrast(view: View) {
         // set contrast attribute
-        tuneBrightnessFragment.setTuneType("Contrast")
+        tuneContrastFragment.setTuneType("Contrast")
+        tuneContrastFragment.setListener(this)
         supportFragmentManager.beginTransaction()
             .replace(R.id.tuneView, tuneContrastFragment)
             .commit()
     }
     fun tuneSaturation(view: View) {
         // set saturation attribute
-        tuneBrightnessFragment.setTuneType("Saturation")
+        tuneSaturationFragment.setTuneType("Saturation")
+        tuneSaturationFragment.setListener(this)
         supportFragmentManager.beginTransaction()
             .replace(R.id.tuneView, tuneSaturationFragment)
             .commit()
     }
 
-    fun reset(view: View) {
+    private fun resetControls() {
         editImg.setImageBitmap(picture)
         resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         // remove fragment
         supportFragmentManager.beginTransaction()
-            .remove(tuneBrightnessFragment)
-            .commit()
+                .remove(tuneBrightnessFragment)
+                .commit()
         supportFragmentManager.beginTransaction()
-            .remove(tuneContrastFragment)
-            .commit()
+                .remove(tuneContrastFragment)
+                .commit()
         supportFragmentManager.beginTransaction()
-            .remove(tuneSaturationFragment)
-            .commit()
+                .remove(tuneSaturationFragment)
+                .commit()
 
         // Reset fragment by recreate the object
         tuneBrightnessFragment = tuneImageFragment()
@@ -427,5 +441,34 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
         tuneBrightnessFragment.setTuneType("Contrast")
         tuneSaturationFragment = tuneImageFragment()
         tuneBrightnessFragment.setTuneType("Saturation")
+    }
+
+    fun reset(view: View) {
+        resetControls()
+    }
+
+    override fun onBrightnessChanged(brightness: Int) {
+        brightnessFinal = brightness
+    }
+
+    override fun onContrastChanged(contrast: Float) {
+        contrastFinal = contrast
+    }
+
+    override fun onSaturationChanged(saturation: Float) {
+        saturationFinal = saturation
+    }
+
+    override fun onTuneStarted() {
+    }
+
+    override fun onTuneCompleted() {
+        val tuneFilter = Filter()
+        tuneFilter.addSubFilter(BrightnessSubFilter(brightnessFinal))
+        tuneFilter.addSubFilter(ContrastSubFilter(contrastFinal))
+        tuneFilter.addSubFilter(SaturationSubfilter(saturationFinal))
+        filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+        resultPicture = tuneFilter.processFilter(filteredPicture)
+        editImg.setImageBitmap(resultPicture)
     }
 }
