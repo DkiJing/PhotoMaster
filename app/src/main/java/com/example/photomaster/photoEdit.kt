@@ -1,5 +1,8 @@
 package com.example.photomaster
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +13,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
@@ -25,7 +30,9 @@ import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
+import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
@@ -470,5 +477,40 @@ private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
         filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = tuneFilter.processFilter(filteredPicture)
         editImg.setImageBitmap(resultPicture)
+    }
+
+    fun saveImage(v: View) {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                MainActivity.REQUEST_CODE
+            )
+        } else {
+            val name = "photoMaster-" + System.currentTimeMillis() + ".JPEG"
+            val dir = "/storage/emulated/0/Pictures/"
+            val file = File(dir)
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            val mFile = File(dir + name)
+            var out : FileOutputStream? = null
+            try {
+                out = FileOutputStream(mFile, false)
+                resultPicture.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                out.flush()
+                val uri = Uri.fromFile(mFile)
+                v.context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                Toast.makeText(v.context, "save success!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(v.context, "save failed!", Toast.LENGTH_SHORT).show()
+            } finally {
+                if (out != null) {
+                    out.close()
+                }
+            }
+
+        }
     }
 }

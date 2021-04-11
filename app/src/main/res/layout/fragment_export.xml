@@ -171,6 +171,7 @@
         android:textColor="@color/main"
         android:paddingLeft="30dp"
         android:shadowColor="@color/grey"
+        android:onClick="saveImage"
         />
     <View
         android:id="@+id/emptyline4"
