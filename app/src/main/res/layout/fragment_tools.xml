@@ -91,6 +91,7 @@
         android:id="@+id/textBtn"
         android:onClick="textClick"
         />
+<!--    android:onClick="startCrop"-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -113,6 +114,7 @@
         app:layout_constraintLeft_toLeftOf="@id/textBtn"
         app:layout_constraintRight_toRightOf="@id/brightBtn"
         android:id="@+id/cropBtn"
+        android:onClick="photoClip"
         />
     <TextView
         android:layout_width="wrap_content"
