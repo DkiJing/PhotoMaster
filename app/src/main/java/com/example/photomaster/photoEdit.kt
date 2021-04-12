@@ -1,11 +1,13 @@
 package com.example.photomaster
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
@@ -80,6 +82,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private var mVariedGestureController: VariedGestureController? = null
     private var mAngle = 0
     lateinit var mBitmap: Bitmap
+
+    private lateinit var clipPath: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,6 +171,74 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         viewPagerAdapter.addFragment(toolsFragment, "Tools")
         viewPagerAdapter.addFragment(exportFragment, "Export")
         viewPager.adapter = viewPagerAdapter
+    }
+
+    fun startCrop(view: View?){
+        System.out.println("startcrop()")
+        //val destinationUri = Uri.fromFile(File(externalCacheDir, "uCrop.jpg"))
+        val resulturi = Uri.parse(
+                MediaStore.Images.Media.insertImage(
+                        contentResolver,
+                        resultPicture,
+                        null,
+                        null
+                )
+        )
+        cropPicture = resultPicture.copy(Bitmap.Config.ARGB_8888, true)
+        //cropPicture = resultPicture
+        //处理后图片的uri
+        val cropUri = Uri.parse(
+                MediaStore.Images.Media.insertImage(
+                        contentResolver,
+                        cropPicture,
+                        null,
+                        null
+                )
+        )
+        Log.d("TAG", cropUri.toString())
+        //uCrop setting
+        val uCrop = UCrop.of(resulturi, cropUri)//裁剪前的uri，裁剪后的uri
+        val options = UCrop.Options()
+        options.setFreeStyleCropEnabled(true)
+        cropPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
+        resultPicture = cropPicture.copy(Bitmap.Config.ARGB_8888, true)
+        editImg.setImageBitmap(resultPicture)
+        //resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri
+        uCrop.withOptions(options)
+        uCrop?.start(this)
+    }
+
+    fun photoClip(view: View?) {
+        // 调用系统中自带的图片剪裁
+        val intent = Intent("com.android.camera.action.CROP")
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        intent.setDataAndType(path, "image/*")
+        clipPath = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + System.currentTimeMillis() + ".jpg")
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, clipPath)
+        intent.putExtra("return-data", false)
+        intent.putExtra("output", clipPath);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true);
+        // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
+        intent.putExtra("crop", "true")
+        //直接返回bitmaps
+        startActivityForResult(intent, 2)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("RST", resultCode.toString())
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            //val bitmap = decodeUriAsBitmap(imageUri)
+            Log.d("CLIP", clipPath.toString())
+            resultPicture = decodeUriAsBitmap(clipPath)
+            editImg.setImageBitmap(resultPicture)
+        }
+
+    }
+    fun decodeUriAsBitmap(uri: Uri):Bitmap {
+        val bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri))
+        return bitmap
     }
 
     fun detectEmotion(v: View) {

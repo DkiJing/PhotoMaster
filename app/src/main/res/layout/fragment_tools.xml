@@ -47,12 +47,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/enhance"
+        android:text="Repair"
         android:textColor="@color/main"
         android:textSize="12sp"
         android:onClick="enhanceResolution"
-        app:layout_constraintTop_toBottomOf="@+id/enhanceBtn"
+        app:layout_constraintEnd_toEndOf="@+id/enhanceBtn"
         app:layout_constraintStart_toStartOf="@id/enhanceBtn"
+        app:layout_constraintTop_toBottomOf="@+id/enhanceBtn"
         />
 
     <ImageButton
@@ -84,13 +85,14 @@
         android:layout_height="28dp"
         android:scaleType="fitXY"
         android:background="@drawable/text_setting"
-        app:layout_constraintTop_toBottomOf="@id/enhanceBtn"
+        app:layout_constraintTop_toBottomOf="@id/resetBtn"
         android:layout_marginTop="28dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginLeft="40dp"
         android:id="@+id/textBtn"
         android:onClick="textClick"
         />
+    <!--    android:onClick="startCrop"-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,16 +106,16 @@
     </TextView>
 
     <ImageButton
+        android:id="@+id/cropBtn"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/crop_setting"
-        app:layout_constraintTop_toBottomOf="@id/enhanceBtn"
         android:layout_marginTop="28dp"
+        android:background="@drawable/crop_setting"
+        android:onClick="photoClip"
+        android:scaleType="fitXY"
         app:layout_constraintLeft_toLeftOf="@id/textBtn"
         app:layout_constraintRight_toRightOf="@id/brightBtn"
-        android:id="@+id/cropBtn"
-        />
+        app:layout_constraintTop_toBottomOf="@id/enhanceBtn" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -204,10 +206,10 @@
         android:layout_height="28dp"
         android:scaleType="fitXY"
         android:background="@drawable/tag_setting"
-        app:layout_constraintTop_toBottomOf="@id/textBtn"
+        app:layout_constraintTop_toBottomOf="@id/brightBtn"
         android:layout_marginTop="28dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="40dp"
+        app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/tagBtn" />
 
     <TextView
@@ -242,26 +244,6 @@
         app:layout_constraintEnd_toEndOf="@id/rotateBtn"
         android:layout_marginTop="4dp"
         android:textColor="@color/grey" />
-
-    <ImageButton
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:scaleType="fitXY"
-        android:background="@drawable/grain_setting"
-        app:layout_constraintTop_toBottomOf="@id/textBtn"
-        android:layout_marginTop="28dp"
-        app:layout_constraintLeft_toLeftOf="@id/brightBtn"
-        android:id="@+id/grainBtn" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/graininess"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@id/grainBtn"
-        app:layout_constraintStart_toStartOf="@id/grainBtn"
-        app:layout_constraintEnd_toEndOf="@id/grainBtn"
-        android:layout_marginTop="4dp"
-        android:textColor="@color/grey"/>
 
     <ImageButton
         android:layout_width="28dp"
