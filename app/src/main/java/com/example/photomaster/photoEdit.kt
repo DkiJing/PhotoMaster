@@ -83,7 +83,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private var mVariedGestureController: VariedGestureController? = null
     private var mAngle = 0
     lateinit var mBitmap: Bitmap
-
+    var i=1;
     private lateinit var clipPath: Uri
 
     var progressdialog: ProgressDialog? = null
@@ -184,7 +184,14 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         editImg.setImageBitmap(resultPicture)
         closeLoading()
     }
+    fun compare(v: View){
+        i++;
+        if (i%2==0){
+            editImg.setImageBitmap(picture);
+        }else
+        {editImg.setImageBitmap(resultPicture)}
 
+    }
     fun enhanceResolution(v: View) {
         //Toast.makeText(v.context, "Enhance", Toast.LENGTH_SHORT).show()
         if(picture.width >= 500 || picture.height >= 500) {
