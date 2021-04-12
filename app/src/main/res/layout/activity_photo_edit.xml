@@ -90,6 +90,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
         android:scaleType="fitXY"
+        android:onClick="compare"
         android:background="@drawable/see_setting"
         />
     <!--    底部的状态栏-->
