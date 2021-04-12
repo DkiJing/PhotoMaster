@@ -2,12 +2,14 @@ package com.example.photomaster
 
 import android.Manifest
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -36,6 +38,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import kotlin.concurrent.thread
 
 class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFragmentListener {
     companion object {
@@ -82,6 +85,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     lateinit var mBitmap: Bitmap
 
     private lateinit var clipPath: Uri
+
+    var progressdialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,10 +157,12 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     }
 
     override fun onFilterSelected(filter: Filter) {
+        showLoading("")
         resetControls()
         filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = filter.processFilter(filteredPicture)
         editImg.setImageBitmap(resultPicture)
+        closeLoading()
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
@@ -172,8 +179,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     }
 
     fun detectEmotion(v: View) {
+        showLoading("")
         resultPicture = Emojifier.detectFaces(v.context, resultPicture)
         editImg.setImageBitmap(resultPicture)
+        closeLoading()
     }
 
     fun enhanceResolution(v: View) {
@@ -446,29 +455,62 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
                 MainActivity.REQUEST_CODE
             )
         } else {
-            val name = "photoMaster-" + System.currentTimeMillis() + ".JPEG"
-            val dir = "/storage/emulated/0/Pictures/"
-            val file = File(dir)
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            val mFile = File(dir + name)
-            var out : FileOutputStream? = null
-            try {
-                out = FileOutputStream(mFile, false)
-                resultPicture.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                out.flush()
-                val uri = Uri.fromFile(mFile)
-                v.context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-                Toast.makeText(v.context, "save success!", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(v.context, "save failed!", Toast.LENGTH_SHORT).show()
-            } finally {
-                if (out != null) {
-                    out.close()
-                }
-            }
+            showLoading("")
+            save(v)
+            closeLoading()
+        }
+    }
 
+    fun save(v: View) {
+        val name = "photoMaster-" + System.currentTimeMillis() + ".JPEG"
+        val dir = "/storage/emulated/0/Pictures/"
+        val file = File(dir)
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        val mFile = File(dir + name)
+        var out : FileOutputStream? = null
+        try {
+            out = FileOutputStream(mFile, false)
+            resultPicture.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            val uri = Uri.fromFile(mFile)
+            v.context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+            Toast.makeText(v.context, "save success!", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(v.context, "save failed!", Toast.LENGTH_SHORT).show()
+        } finally {
+            if (out != null) {
+                out.close()
+            }
+        }
+    }
+
+    private fun showLoading(m: String) {
+        thread(start = true) {
+            var message = m;
+            if (message.isEmpty()) {
+                message = "Photo Master Loading..."
+            }
+            if (progressdialog == null) {
+                Looper.prepare()
+                progressdialog = ProgressDialog(this)
+                progressdialog?.setTitle(message)
+                progressdialog?.setCancelable(false)
+                progressdialog?.show()
+                Looper.loop()
+            }
+        }
+    }
+
+    private fun closeLoading() {
+        thread(start = true) {
+            if (progressdialog != null) {
+                Looper.prepare()
+                progressdialog?.dismiss()
+                progressdialog = null
+                Looper.loop()
+            }
         }
     }
 }
