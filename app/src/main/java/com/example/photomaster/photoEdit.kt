@@ -1,12 +1,11 @@
 package com.example.photomaster
 
-import android.app.Activity
+import android.Manifest
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.pm.PackageManager
+import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
@@ -14,22 +13,31 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
+import com.example.photomaster.tune.TuneImageFragmentListener
 import com.example.photomaster.util.AssetsUtil
+import com.example.photomaster.util.BitmapUtils
+import com.example.photomaster.view.VariedGestureController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.yalantis.ucrop.UCrop
 import com.zomato.photofilters.imageprocessors.Filter
+import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
+import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
+import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import kotlinx.android.synthetic.main.activity_photo_edit.*
+import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
-
-class photoEdit : AppCompatActivity(), FilterListFragmentListener {
+class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFragmentListener {
     companion object {
         init {
             System.loadLibrary("SuperResolution")
@@ -41,7 +49,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     private lateinit var filteredFragment: filterFragment
     private lateinit var toolsFragment: toolsFragment
     private lateinit var exportFragment: exportFragment
-
+    var tuneBrightnessFragment = tuneImageFragment()
+    var tuneContrastFragment = tuneImageFragment()
+    var tuneSaturationFragment = tuneImageFragment()
 
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
@@ -49,19 +59,27 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
 
     lateinit var cropPicture: Bitmap
 
+    // modified image values
+    private var brightnessFinal = 0
+    private var saturationFinal = 1.0f
+    private var contrastFinal = 1.0f
+
     var bundle: Bundle? = null
     private var useGPU = true
     private var superResolutionNativeHandle: Long = 0
     private lateinit var model: MappedByteBuffer
     private lateinit var path: Uri
-    private lateinit var clipPath: Uri
-
     private val MODEL_NAME = "ESRGAN.tflite"
     private val LR_IMAGE_HEIGHT = 50
     private val LR_IMAGE_WIDTH = 50
     private val UPSCALE_FACTOR = 4
     private val SR_IMAGE_HEIGHT = LR_IMAGE_HEIGHT * UPSCALE_FACTOR
     private val SR_IMAGE_WIDTH = LR_IMAGE_WIDTH * UPSCALE_FACTOR
+
+    //text
+    private var mVariedGestureController: VariedGestureController? = null
+    private var mAngle = 0
+    lateinit var mBitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,15 +91,66 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         // It is used to join TabLayout with ViewPager.
         tabLayout.setupWithViewPager(viewPager)
 
+        //textEdit
+        viewPager.setOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.e("ViewPager", "position is $position")
+                //判断滑动后选择的页面设置相应的RadioButton被选中
+                if (position == 0 || position == 2) {
+                    resultPicture = BitmapUtils.captureView(root);
+                    editImg.setImageBitmap(resultPicture);
+                    custom.setBitmap(mBitmap);
+                }
+            }
+        })
+        //TextEdit
+
         // load image from camera or album
         bundle = intent.extras
         path = bundle?.get("imgUri") as Uri
         editImg.setImageURI(path)
+        // initialize bitmaps
         picture = editImg.drawable.toBitmap()
+        filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+
+        //text
+        mBitmap = BitmapFactory.decodeResource(resources, R.drawable.trans_bg)
+            .copy(Bitmap.Config.ARGB_8888, true);
+
+        mVariedGestureController = VariedGestureController(this, custom)
+        mVariedGestureController!!.setVariedListener(object :
+            VariedGestureController.VariedListener {
+            override fun onScale(scaleX: Float, scaleY: Float) {
+                custom.setScale(scaleX, scaleY)
+            }
+
+            override fun onAngle(angle: Int) {
+                custom.setAngle(mAngle + angle)
+            }
+
+            override fun onAngleEnd(angle: Int) {
+                mAngle = mAngle + angle;
+            }
+
+            override fun onShift(horShift: Float, verShift: Float) {
+                custom.setShift(horShift, verShift)
+            }
+        })
     }
 
     override fun onFilterSelected(filter: Filter) {
+        resetControls()
         filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
         resultPicture = filter.processFilter(filteredPicture)
         editImg.setImageBitmap(resultPicture)
@@ -135,7 +204,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val scaledWidth = displayMetrics.widthPixels
-        val scaledHeight = SR_IMAGE_HEIGHT * (scaledWidth / SR_IMAGE_WIDTH)
+        val scaledHeight = scaledWidth
         resultPicture = Bitmap.createScaledBitmap(srImgBitmap, scaledWidth, scaledHeight, true)
 
         // Set the enhanced and scaled image to the image view.
@@ -198,32 +267,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
     }
 
     //photo crop
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        System.out.println("onActivityResult()")
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if(resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP){
-//            val resultUri = UCrop.getOutput(data!!)
-//
-//        } else if (resultCode == UCrop.RESULT_ERROR) {
-//            val cropError = UCrop.getError(data!!)
-//        }
-//
-//    }
+    fun startCrop(){
+        print("startcrop")
 
-    fun startCrop(view: View?){
-        System.out.println("startcrop()")
-        //val destinationUri = Uri.fromFile(File(externalCacheDir, "uCrop.jpg"))
-        val resulturi = Uri.parse(
-                MediaStore.Images.Media.insertImage(
-                        contentResolver,
-                        resultPicture,
-                        null,
-                        null
-                )
-        )
-        cropPicture = resultPicture.copy(Bitmap.Config.ARGB_8888, true)
-        //cropPicture = resultPicture
-        //处理后图片的uri
+        //处理后图片的uri,此时cropPicture = null
         val cropUri = Uri.parse(
             MediaStore.Images.Media.insertImage(
                 contentResolver,
@@ -232,66 +279,238 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener {
                 null
             )
         )
-        Log.d("TAG", cropUri.toString())
         //uCrop setting
-        val uCrop = UCrop.of(resulturi, cropUri)//裁剪前的uri，裁剪后的uri
+        val uCrop = UCrop.of( path, cropUri)
         val options = UCrop.Options()
-        options.setFreeStyleCropEnabled(true)
-        cropPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
-        resultPicture = cropPicture.copy(Bitmap.Config.ARGB_8888, true)
-        editImg.setImageBitmap(resultPicture)
-        //resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri
-        uCrop.withOptions(options)
-        uCrop?.start(this)
+        resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
     }
 
-     fun photoClip(view: View?) {
-        // 调用系统中自带的图片剪裁
-        val intent = Intent("com.android.camera.action.CROP")
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        intent.setDataAndType(path, "image/*")
-        clipPath = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + System.currentTimeMillis() + ".jpg")
-        //intent.putExtra(MediaStore.EXTRA_OUTPUT, clipPath)
-        intent.putExtra("return-data", false)
-         intent.putExtra("output", clipPath);
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        intent.putExtra("noFaceDetection", true);
-        // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
-        intent.putExtra("crop", "true")
-        //直接返回bitmaps
-        startActivityForResult(intent, 2)
-    }
+    /*
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d("RST", resultCode.toString())
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK){
-            //val bitmap = decodeUriAsBitmap(imageUri)
-            Log.d("CLIP", clipPath.toString())
-            resultPicture = decodeUriAsBitmap(clipPath)
-            editImg.setImageBitmap(resultPicture)
+fun textClick(v: View) {
+    val textEditorDialogFragment = TextEditorDialogFragment.show(this)
+    textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
+        val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
+        val canvas = Canvas(resultBitmap)
+
+        val scale = v.context.resources.displayMetrics.density
+        var paint = Paint(Paint.ANTI_ALIAS_FLAG);
+        // text color
+        paint.setColor(colorCode)
+        // text size in pixels
+        paint.setTextSize(30.0f * scale)
+        // text shadow
+        paint.setShadowLayer(1f, 0f, 1f, colorCode)
+        // draw text to the Canvas center
+        var bounds = Rect()
+        paint.getTextBounds(inputText, 0, inputText.length, bounds)
+        canvas.drawBitmap(picture, 0f, 0f, null)
+        var x = (resultBitmap.getWidth() - bounds.width())/6;
+        var y = (resultBitmap.getHeight() + bounds.height())/5;
+        canvas.drawText(
+                inputText,
+                x * scale,
+                y * scale,
+                paint
+        )
+
+        editImg.setImageBitmap(resultBitmap)
+    }
+}
+
+fun rotateClick(v: View) {
+//        dir = (dir - 90) % 360
+    dir = -90
+    val resultBitmap = convert(picture, dir)
+    if (resultBitmap != null) {
+        picture = resultBitmap
+        editImg.setImageBitmap(resultBitmap)
+    }
+}
+
+private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
+    val w = a.width
+    val h = a.height
+    val newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888) // 创建一个新的和SRC长度宽度一样的位图
+    val cv = Canvas(newb)
+    val m = Matrix()
+    m.postRotate((dir).toFloat()) //旋转-90度
+    val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
+    cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
+    return newb
+}
+ */
+
+
+
+    fun textClick(v: View) {
+        val textEditorDialogFragment = TextEditorDialogFragment.show(this)
+        textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
+//            val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
+            val resultBitmap = Bitmap.createBitmap(mBitmap.width, mBitmap.height, mBitmap.config)
+            val canvas = Canvas(resultBitmap)
+
+            val scale = v.context.resources.displayMetrics.density
+            var paint = Paint(Paint.ANTI_ALIAS_FLAG);
+            // text color
+            paint.setColor(colorCode)
+            // text size in pixels
+            paint.setTextSize(30.0f * scale)
+            // text shadow
+            paint.setShadowLayer(1f, 0f, 1f, colorCode)
+            // draw text to the Canvas center
+            var bounds = Rect()
+            paint.getTextBounds(inputText, 0, inputText.length, bounds)
+            canvas.drawBitmap(mBitmap, 0f, 0f, null)
+            var x = (resultBitmap.width - bounds.width()) / 7;
+            var y = (resultBitmap.height + bounds.height()) / 4;
+            canvas.drawText(
+                inputText,
+                x * scale,
+                y * scale,
+                paint
+            )
+
+            custom.setBitmap(resultBitmap);
+//            custom.setImageBitmap(resultBitmap)
+//            text.setText(inputText)
+//            text.setTextColor(colorCode)
         }
-//        var photoPath: String
-//        if(resultCode == Activity.RESULT_OK && requestCode == 2){
-//            val bundle = intent!!.extras
-//            Log.d("BUN", intent.extras.toString())
-//            if (bundle != null) {
-//                Log.d("Bun","bundle is not null")
-//                //在这里获得了剪裁后的Bitmap对象，可以用于上传
-//                val image = bundle.getParcelable<Bitmap>("outputFormat")
-//                Log.d("IMG", image.toString())
-//                if (image != null) {
-//                    Log.d("Tag","image is not null")
-//                    resultPicture = image.copy(Bitmap.Config.ARGB_8888, true)
-//                }
-//                editImg.setImageBitmap(resultPicture)
-//            }
-//        }
-    }
-    fun decodeUriAsBitmap(uri: Uri):Bitmap {
-        val bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri))
-        return bitmap
     }
 
+    fun rotateClick(v: View) {
+//        dir = (dir - 90) % 360
+        var dir = -90
+        val resultBitmap = convert(resultPicture, dir)
 
+        if (resultBitmap != null) {
+            resultPicture = resultBitmap
+            editImg.setImageBitmap(resultBitmap)
+        }
+    }
+
+    private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
+        val w = a.width
+        val h = a.height
+        val newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888) // 创建一个新的和SRC长度宽度一样的位图
+        val cv = Canvas(newb)
+        val m = Matrix()
+        m.postRotate((orientationDegree).toFloat()) //旋转-90度
+        val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
+        cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
+        return newb
+    }
+
+    fun tuneBrightness(view: View) {
+        // set brightness attribute
+        tuneBrightnessFragment.setTuneType("Brightness")
+        tuneBrightnessFragment.setListener(this)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneBrightnessFragment)
+            .commit()
+    }
+
+    fun tuneContrast(view: View) {
+        // set contrast attribute
+        tuneContrastFragment.setTuneType("Contrast")
+        tuneContrastFragment.setListener(this)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneContrastFragment)
+            .commit()
+    }
+    fun tuneSaturation(view: View) {
+        // set saturation attribute
+        tuneSaturationFragment.setTuneType("Saturation")
+        tuneSaturationFragment.setListener(this)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.tuneView, tuneSaturationFragment)
+            .commit()
+    }
+
+    private fun resetControls() {
+        editImg.setImageBitmap(picture)
+        resultPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+        // remove fragment
+        supportFragmentManager.beginTransaction()
+                .remove(tuneBrightnessFragment)
+                .commit()
+        supportFragmentManager.beginTransaction()
+                .remove(tuneContrastFragment)
+                .commit()
+        supportFragmentManager.beginTransaction()
+                .remove(tuneSaturationFragment)
+                .commit()
+
+        // Reset fragment by recreate the object
+        tuneBrightnessFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Brightness")
+        tuneContrastFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Contrast")
+        tuneSaturationFragment = tuneImageFragment()
+        tuneBrightnessFragment.setTuneType("Saturation")
+    }
+
+    fun reset(view: View) {
+        resetControls()
+    }
+
+    override fun onBrightnessChanged(brightness: Int) {
+        brightnessFinal = brightness
+    }
+
+    override fun onContrastChanged(contrast: Float) {
+        contrastFinal = contrast
+    }
+
+    override fun onSaturationChanged(saturation: Float) {
+        saturationFinal = saturation
+    }
+
+    override fun onTuneStarted() {
+    }
+
+    override fun onTuneCompleted() {
+        val tuneFilter = Filter()
+        tuneFilter.addSubFilter(BrightnessSubFilter(brightnessFinal))
+        tuneFilter.addSubFilter(ContrastSubFilter(contrastFinal))
+        tuneFilter.addSubFilter(SaturationSubfilter(saturationFinal))
+        filteredPicture = picture.copy(Bitmap.Config.ARGB_8888, true)
+        resultPicture = tuneFilter.processFilter(filteredPicture)
+        editImg.setImageBitmap(resultPicture)
+    }
+
+    fun saveImage(v: View) {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                MainActivity.REQUEST_CODE
+            )
+        } else {
+            val name = "photoMaster-" + System.currentTimeMillis() + ".JPEG"
+            val dir = "/storage/emulated/0/Pictures/"
+            val file = File(dir)
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            val mFile = File(dir + name)
+            var out : FileOutputStream? = null
+            try {
+                out = FileOutputStream(mFile, false)
+                resultPicture.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                out.flush()
+                val uri = Uri.fromFile(mFile)
+                v.context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                Toast.makeText(v.context, "save success!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(v.context, "save failed!", Toast.LENGTH_SHORT).show()
+            } finally {
+                if (out != null) {
+                    out.close()
+                }
+            }
+
+        }
+    }
 }
