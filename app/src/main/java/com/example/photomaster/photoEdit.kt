@@ -1,12 +1,13 @@
 package com.example.photomaster
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -24,7 +25,6 @@ import com.example.photomaster.util.BitmapUtils
 import com.example.photomaster.view.VariedGestureController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.yalantis.ucrop.UCrop
 import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
@@ -80,6 +80,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private var mVariedGestureController: VariedGestureController? = null
     private var mAngle = 0
     lateinit var mBitmap: Bitmap
+
+    private lateinit var clipPath: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -266,82 +268,38 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
             .show()
     }
 
-    //photo crop
-    fun startCrop(){
-        print("startcrop")
-
-        //处理后图片的uri,此时cropPicture = null
-        val cropUri = Uri.parse(
-            MediaStore.Images.Media.insertImage(
-                contentResolver,
-                cropPicture,
-                null,
-                null
-            )
-        )
-        //uCrop setting
-        val uCrop = UCrop.of( path, cropUri)
-        val options = UCrop.Options()
-        resultPicture = MediaStore.Images.Media.getBitmap(this.contentResolver, cropUri)
+    fun photoClip(view: View?) {
+        // 调用系统中自带的图片剪裁
+        val intent = Intent("com.android.camera.action.CROP")
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        intent.setDataAndType(path, "image/*")
+        clipPath = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + System.currentTimeMillis() + ".jpg")
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, clipPath)
+        intent.putExtra("return-data", false)
+        intent.putExtra("output", clipPath);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true);
+        // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
+        intent.putExtra("crop", "true")
+        //直接返回bitmaps
+        startActivityForResult(intent, 2)
     }
 
-    /*
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("RST", resultCode.toString())
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            //val bitmap = decodeUriAsBitmap(imageUri)
+            Log.d("CLIP", clipPath.toString())
+            resultPicture = decodeUriAsBitmap(clipPath)
+            editImg.setImageBitmap(resultPicture)
+        }
 
-fun textClick(v: View) {
-    val textEditorDialogFragment = TextEditorDialogFragment.show(this)
-    textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
-        val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
-        val canvas = Canvas(resultBitmap)
-
-        val scale = v.context.resources.displayMetrics.density
-        var paint = Paint(Paint.ANTI_ALIAS_FLAG);
-        // text color
-        paint.setColor(colorCode)
-        // text size in pixels
-        paint.setTextSize(30.0f * scale)
-        // text shadow
-        paint.setShadowLayer(1f, 0f, 1f, colorCode)
-        // draw text to the Canvas center
-        var bounds = Rect()
-        paint.getTextBounds(inputText, 0, inputText.length, bounds)
-        canvas.drawBitmap(picture, 0f, 0f, null)
-        var x = (resultBitmap.getWidth() - bounds.width())/6;
-        var y = (resultBitmap.getHeight() + bounds.height())/5;
-        canvas.drawText(
-                inputText,
-                x * scale,
-                y * scale,
-                paint
-        )
-
-        editImg.setImageBitmap(resultBitmap)
     }
-}
-
-fun rotateClick(v: View) {
-//        dir = (dir - 90) % 360
-    dir = -90
-    val resultBitmap = convert(picture, dir)
-    if (resultBitmap != null) {
-        picture = resultBitmap
-        editImg.setImageBitmap(resultBitmap)
+    fun decodeUriAsBitmap(uri: Uri):Bitmap {
+        val bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri))
+        return bitmap
     }
-}
-
-private fun convert(a: Bitmap, orientationDegree: Int): Bitmap? {
-    val w = a.width
-    val h = a.height
-    val newb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888) // 创建一个新的和SRC长度宽度一样的位图
-    val cv = Canvas(newb)
-    val m = Matrix()
-    m.postRotate((dir).toFloat()) //旋转-90度
-    val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
-    cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
-    return newb
-}
- */
-
-
 
     fun textClick(v: View) {
         val textEditorDialogFragment = TextEditorDialogFragment.show(this)
