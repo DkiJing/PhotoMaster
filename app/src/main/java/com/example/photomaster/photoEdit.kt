@@ -24,6 +24,8 @@ import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.tune.TuneImageFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.example.photomaster.util.BitmapUtils
+import com.example.photomaster.view.CustomDrawView1
+import com.example.photomaster.view.tagEdit
 import com.example.photomaster.view.textViewEdit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
@@ -31,8 +33,6 @@ import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
-import com.example.photomaster.view.CustomDrawView1
-import com.example.photomaster.view.tagEdit
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.File
 import java.io.FileInputStream
@@ -44,6 +44,7 @@ import kotlin.concurrent.thread
 
 class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFragmentListener {
     companion object {
+        const val WRITE_REQUEST_CODE = 4
         init {
             System.loadLibrary("SuperResolution")
             System.loadLibrary("NativeImageProcessor")
@@ -61,8 +62,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
     lateinit var resultPicture: Bitmap
-
-    lateinit var cropPicture: Bitmap
 
     // modified image values
     private var brightnessFinal = 0
@@ -312,22 +311,24 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true")
         //直接返回bitmaps
-        startActivityForResult(intent, 2)
+        startActivityForResult(intent, WRITE_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d("RST", resultCode.toString())
-        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK){
-            //val bitmap = decodeUriAsBitmap(imageUri)
-            Log.d("CLIP", clipPath.toString())
-            resultPicture = decodeUriAsBitmap(clipPath)
-            editImg.setImageBitmap(resultPicture)
+            if(requestCode == WRITE_REQUEST_CODE) {
+                if(data != null && data.data != null) {
+                    Log.d("TAG", clipPath.toString())
+                    resultPicture = decodeUriAsBitmap(clipPath)
+                    editImg.setImageBitmap(resultPicture)
+                }
+            }
         }
-
+        super.onActivityResult(requestCode, resultCode, data)
     }
+
     fun decodeUriAsBitmap(uri: Uri):Bitmap {
-        val bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri))
+        val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
         return bitmap
     }
 
