@@ -24,7 +24,7 @@ import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.tune.TuneImageFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.example.photomaster.util.BitmapUtils
-import com.example.photomaster.view.VariedGestureController
+import com.example.photomaster.view.textViewEdit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.zomato.photofilters.imageprocessors.Filter
@@ -32,7 +32,7 @@ import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import com.example.photomaster.view.CustomDrawView1
-import com.example.photomaster.view.VariedGestureController1
+import com.example.photomaster.view.tagEdit
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.File
 import java.io.FileInputStream
@@ -82,7 +82,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private val SR_IMAGE_WIDTH = LR_IMAGE_WIDTH * UPSCALE_FACTOR
 
     //text
-    private var mVariedGestureController: VariedGestureController? = null
+    private var mVariedGestureController: textViewEdit? = null
     private var mAngle = 0
     lateinit var mBitmap: Bitmap
     lateinit var mBitmap1: Bitmap
@@ -149,9 +149,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         mBitmap1 = BitmapFactory.decodeResource(resources, R.mipmap.ic_tag)
                 .copy(Bitmap.Config.ARGB_8888, true);
 
-        mVariedGestureController = VariedGestureController(this, custom)
+        mVariedGestureController = textViewEdit(this, custom)
         mVariedGestureController!!.setVariedListener(object :
-            VariedGestureController.VariedListener {
+                textViewEdit.VariedListener {
             override fun onScale(scaleX: Float, scaleY: Float) {
                 custom.setScale(scaleX, scaleY)
             }
@@ -373,9 +373,9 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 //        val layoutParams = LinearLayout.LayoutParams(200,200);
 //        view.layoutParams = layoutParams;
         view.setBitmap(mBitmap1)
-        val mVariedGestureController = VariedGestureController1(this, view)
+        val mVariedGestureController = tagEdit(this, view)
         mVariedGestureController!!.setVariedListener(object :
-                VariedGestureController1.VariedListener {
+                tagEdit.VariedListener {
             override fun onScale(scaleX: Float, scaleY: Float) {
                 view.setScale(scaleX, scaleY)
             }

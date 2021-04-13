@@ -16,7 +16,7 @@ import com.example.photomaster.R;
 /**
  */
 
-public class CustomDrawView extends View {
+public class CustomDrawView1 extends View {
 
     private Paint paint;
     private Matrix matrix;
@@ -24,22 +24,22 @@ public class CustomDrawView extends View {
 
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
-    private float shiftX = 0.0f;
-    private float shiftY = 0.0f;
+    private float shiftX = 450.0f;
+    private float shiftY = 800.0f;
     private int angle = 0;
 
 
-    public CustomDrawView(Context context) {
+    public CustomDrawView1(Context context) {
         super(context);
         init();
     }
 
-    public CustomDrawView(Context context, AttributeSet attrs) {
+    public CustomDrawView1(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public CustomDrawView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomDrawView1(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -85,6 +85,7 @@ public class CustomDrawView extends View {
     }
 
     public void setBitmap(Bitmap b){
+
         bitmap = b;
         invalidate();
     }
