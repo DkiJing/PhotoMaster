@@ -31,6 +31,8 @@ import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
+import com.example.photomaster.view.CustomDrawView1
+import com.example.photomaster.view.VariedGestureController1
 import kotlinx.android.synthetic.main.activity_photo_edit.*
 import java.io.File
 import java.io.FileInputStream
@@ -83,6 +85,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private var mVariedGestureController: VariedGestureController? = null
     private var mAngle = 0
     lateinit var mBitmap: Bitmap
+    lateinit var mBitmap1: Bitmap
     var i=1;
     private lateinit var clipPath: Uri
 
@@ -116,6 +119,15 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
                 if (position == 0 || position == 2) {
                     resultPicture = BitmapUtils.captureView(root);
                     editImg.setImageBitmap(resultPicture);
+//                    root.removeViewAt(2)
+                    //移除tagview
+                    val count = root.childCount;
+                    for (i in 1..count) {
+                        Log.e("count->",i.toString());
+                        if(i>2){
+                            root.removeViewAt(2)
+                        }
+                    }
                     custom.setBitmap(mBitmap);
                 }
             }
@@ -134,6 +146,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         //text
         mBitmap = BitmapFactory.decodeResource(resources, R.drawable.trans_bg)
             .copy(Bitmap.Config.ARGB_8888, true);
+        mBitmap1 = BitmapFactory.decodeResource(resources, R.mipmap.ic_tag)
+                .copy(Bitmap.Config.ARGB_8888, true);
 
         mVariedGestureController = VariedGestureController(this, custom)
         mVariedGestureController!!.setVariedListener(object :
@@ -351,6 +365,37 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 //            text.setTextColor(colorCode)
         }
     }
+
+
+    //tag tool
+    fun tagClick(v: View) {
+        val view = CustomDrawView1(this);
+//        val layoutParams = LinearLayout.LayoutParams(200,200);
+//        view.layoutParams = layoutParams;
+        view.setBitmap(mBitmap1)
+        val mVariedGestureController = VariedGestureController1(this, view)
+        mVariedGestureController!!.setVariedListener(object :
+                VariedGestureController1.VariedListener {
+            override fun onScale(scaleX: Float, scaleY: Float) {
+                view.setScale(scaleX, scaleY)
+            }
+
+            override fun onAngle(angle: Int) {
+                view.setAngle(mAngle + angle)
+            }
+
+            override fun onAngleEnd(angle: Int) {
+                mAngle = mAngle + angle;
+            }
+
+            override fun onShift(horShift: Float, verShift: Float) {
+                view.setShift(horShift, verShift)
+            }
+        })
+
+        root.addView(view);
+    }
+    //tag tool
 
     fun rotateClick(v: View) {
 //        dir = (dir - 90) % 360
