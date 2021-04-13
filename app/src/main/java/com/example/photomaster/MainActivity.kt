@@ -33,14 +33,58 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             bottomSheet.newInstance().show(supportFragmentManager, "test")
         }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), MainActivity.REQUEST_CODE)
-        } else if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), MainActivity.REQUEST_CODE)
-        }
+        checkPermissions()
+    }
 
+    /**
+     * Checks the dynamically-controlled permissions and requests missing permissions from end user.
+     */
+    protected fun checkPermissions() {
+        val missingPermissions: MutableList<String> = ArrayList()
+        // check all required dynamic permissions
+        for (permission in PERMISSIONS_REQ) {
+            val result = ContextCompat.checkSelfPermission(this, permission)
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission)
+            }
+        }
+        if (missingPermissions.isNotEmpty()) {
+            // request all missing permissions
+            val permissions = missingPermissions
+                    .toTypedArray()
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE)
+        } else {
+            val grantResults = IntArray(PERMISSIONS_REQ.size)
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED)
+            onRequestPermissionsResult(REQUEST_CODE, PERMISSIONS_REQ,
+                    grantResults)
+        }
+    }
+
+//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_CODE -> {
+                var index = permissions.size - 1
+                while (index >= 0) {
+                    if ((grantResults.isNotEmpty() &&
+                                    grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                        // Permission is granted. Continue the action or workflow
+                        // in your app.
+                        return
+                    } else {
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                + "' not granted, exiting", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                }
+                return
+            }
+        }
     }
 
     @Throws(IOException::class)
@@ -105,7 +149,9 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE = 2
         const val IMAGE_GALLERY_REQUEST_CODE = 3
         val PERMISSIONS_REQ = arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
         )
     }
 
