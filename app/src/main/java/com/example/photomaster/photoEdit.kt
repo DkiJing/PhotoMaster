@@ -201,6 +201,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         editImg.setImageBitmap(resultPicture)
         closeLoading()
     }
+
     fun compare(v: View){
         i++;
         if (i%2==0){
@@ -209,6 +210,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         {editImg.setImageBitmap(resultPicture)}
 
     }
+
     fun enhanceResolution(v: View) {
         showLoading("")
         if(picture.width >= 500 || picture.height >= 500) {
@@ -421,8 +423,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         val m = Matrix()
         m.postRotate((orientationDegree).toFloat()) //旋转-90度
         val new2 = Bitmap.createBitmap(a, 0, 0, w, h, m, true)
-        cv.drawBitmap(new2, Rect(0, 0, new2.width, new2.height), Rect(0, 0, w, h), null)
-        return newb
+        return new2
     }
 
     fun tuneBrightness(view: View) {
