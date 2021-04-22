@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.example.photomaster.fragments.recentImageSheet
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.IOException
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //打开图片按钮的点击事件，只有写了才能实现阴影效果
         addButton.setOnClickListener {
-            bottomSheet.newInstance().show(supportFragmentManager, "test")
+            recentImageSheet.newInstance().show(supportFragmentManager, "test")
         }
         checkPermissions()
     }
@@ -111,15 +112,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun openAlbum(v: View) {
-        intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
             type = "image/*"
-            startActivityForResult(this, IMAGE_GALLERY_REQUEST_CODE)
         }
-    }
-
-    fun selectPhoto(v: View) {
-        // TODO send intent to the editPhoto activity
-        Toast.makeText(this, "A recent photo is selected.", Toast.LENGTH_SHORT).show()
+        startActivityForResult(intent, IMAGE_GALLERY_REQUEST_CODE)
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

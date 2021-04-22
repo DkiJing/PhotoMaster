@@ -1,4 +1,4 @@
-package com.example.photomaster;
+package com.example.photomaster.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -20,6 +20,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.photomaster.ColorPickerAdapter;
+import com.example.photomaster.R;
 
 /**
  * Created by Burhanuddin Rashid on 1/16/2018.

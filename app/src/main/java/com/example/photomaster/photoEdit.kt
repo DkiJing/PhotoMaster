@@ -21,10 +21,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.viewpager.widget.ViewPager
 import com.example.photomaster.filters.FilterListFragmentListener
+import com.example.photomaster.fragments.*
 import com.example.photomaster.tune.TuneImageFragmentListener
 import com.example.photomaster.util.AssetsUtil
 import com.example.photomaster.util.BitmapUtils
-import com.example.photomaster.view.CustomDrawView1
+import com.example.photomaster.view.CustomDrawView
 import com.example.photomaster.view.tagEdit
 import com.example.photomaster.view.textViewEdit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -55,9 +56,12 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     private lateinit var filteredFragment: filterFragment
     private lateinit var toolsFragment: toolsFragment
     private lateinit var exportFragment: exportFragment
-    var tuneBrightnessFragment = tuneImageFragment()
-    var tuneContrastFragment = tuneImageFragment()
-    var tuneSaturationFragment = tuneImageFragment()
+    var tuneBrightnessFragment =
+        tuneImageFragment()
+    var tuneContrastFragment =
+        tuneImageFragment()
+    var tuneSaturationFragment =
+        tuneImageFragment()
 
     lateinit var picture: Bitmap
     lateinit var filteredPicture: Bitmap
@@ -370,7 +374,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 
     //tag tool
     fun tagClick(v: View) {
-        val view = CustomDrawView1(this);
+        val view = CustomDrawView(this);
 //        val layoutParams = LinearLayout.LayoutParams(200,200);
 //        view.layoutParams = layoutParams;
         view.setBitmap(mBitmap1)
@@ -462,11 +466,14 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
                 .commit()
 
         // Reset fragment by recreate the object
-        tuneBrightnessFragment = tuneImageFragment()
+        tuneBrightnessFragment =
+            tuneImageFragment()
         tuneBrightnessFragment.setTuneType("Brightness")
-        tuneContrastFragment = tuneImageFragment()
+        tuneContrastFragment =
+            tuneImageFragment()
         tuneBrightnessFragment.setTuneType("Contrast")
-        tuneSaturationFragment = tuneImageFragment()
+        tuneSaturationFragment =
+            tuneImageFragment()
         tuneBrightnessFragment.setTuneType("Saturation")
     }
 

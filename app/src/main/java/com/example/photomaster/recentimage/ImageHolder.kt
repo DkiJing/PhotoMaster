@@ -1,9 +1,10 @@
-package com.example.photomaster
+package com.example.photomaster.recentimage
 
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.example.photomaster.R
 
 class ImageHolder(v: View) : RecyclerView.ViewHolder(v){
     var mImage: ImageView

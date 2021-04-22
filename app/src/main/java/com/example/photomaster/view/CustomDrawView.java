@@ -24,8 +24,8 @@ public class CustomDrawView extends View {
 
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
-    private float shiftX = 0.0f;
-    private float shiftY = 0.0f;
+    private float shiftX = 450.0f;
+    private float shiftY = 800.0f;
     private int angle = 0;
 
 
@@ -85,6 +85,7 @@ public class CustomDrawView extends View {
     }
 
     public void setBitmap(Bitmap b){
+
         bitmap = b;
         invalidate();
     }

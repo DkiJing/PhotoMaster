@@ -1,4 +1,4 @@
-package com.example.photomaster
+package com.example.photomaster.fragments
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -6,23 +6,31 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.photomaster.R
+import com.example.photomaster.recentimage.ImageAdapter
+import com.example.photomaster.recentimage.ImageModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.bottonsheet_dialog.*
 
 /**
  * @author Shigehiro Soejima
  */
-class bottomSheet : BottomSheetDialogFragment() {
+class recentImageSheet : BottomSheetDialogFragment() {
 
     companion object {
-        fun newInstance() = bottomSheet()
+        fun newInstance() = recentImageSheet()
     }
 
     override fun setupDialog(dialog: Dialog, style: Int) {
         dialog.apply {
             setContentView(R.layout.bottonsheet_dialog)
             images_list.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
-            val imageAdapter = activity?.let { ImageAdapter(it, images) }
+            val imageAdapter = activity?.let {
+                ImageAdapter(
+                    it,
+                    images
+                )
+            }
             images_list.adapter = imageAdapter
         }
     }

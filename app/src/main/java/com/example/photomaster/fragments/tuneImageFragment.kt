@@ -1,4 +1,4 @@
-package com.example.photomaster
+package com.example.photomaster.fragments
 
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +9,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.example.photomaster.R
 import com.example.photomaster.tune.TuneImageFragmentListener
 
 /**

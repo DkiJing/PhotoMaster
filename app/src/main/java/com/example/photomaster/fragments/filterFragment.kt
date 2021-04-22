@@ -1,4 +1,4 @@
-package com.example.photomaster
+package com.example.photomaster.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.photomaster.R
 import com.example.photomaster.filters.FilterListFragmentListener
 import com.example.photomaster.filters.FilterViewAdapter
 import com.example.photomaster.util.BitmapUtils
