@@ -210,7 +210,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 
     }
     fun enhanceResolution(v: View) {
-        //Toast.makeText(v.context, "Enhance", Toast.LENGTH_SHORT).show()
+        showLoading("")
         if(picture.width >= 500 || picture.height >= 500) {
             Toast.makeText(v.context, "Please select an image with lower resolution.", Toast.LENGTH_SHORT).show()
             return
@@ -244,7 +244,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 
         // Set the enhanced and scaled image to the image view.
         editImg.setImageBitmap(resultPicture)
-        Log.d("TAG", "Finish!!!")
+        closeLoading()
     }
 
     @WorkerThread
