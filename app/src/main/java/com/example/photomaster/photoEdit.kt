@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -302,9 +303,10 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
             .show()
     }
 
-    // 有点问题
+    // 有点问题，要用第三方的库来做
     fun photoClip(view: View?) {
         // 调用系统中自带的图片剪裁
+        // 我暂时不知道怎么样在这里设置系统相册的activity
         val intent = Intent("com.android.camera.action.CROP")
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         intent.setDataAndType(path, "image/*")
@@ -315,7 +317,7 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
         intent.putExtra("noFaceDetection", true);
         // 下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true")
-        //直接返回bitmaps
+        //直接返回bitmaps，这里如果找不到相册的activity就会一直自动跳转MainActivity
         startActivityForResult(intent, WRITE_REQUEST_CODE)
     }
 
