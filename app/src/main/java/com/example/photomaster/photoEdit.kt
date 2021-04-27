@@ -122,7 +122,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
                 if (position == 0 || position == 2) {
                     resultPicture = BitmapUtils.captureView(root);
                     editImg.setImageBitmap(resultPicture);
-//                    root.removeViewAt(2)
                     //移除tagview
                     val count = root.childCount;
                     for (i in 1..count) {
@@ -303,13 +302,13 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
             .show()
     }
 
+    // 有点问题
     fun photoClip(view: View?) {
         // 调用系统中自带的图片剪裁
         val intent = Intent("com.android.camera.action.CROP")
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         intent.setDataAndType(path, "image/*")
         clipPath = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + System.currentTimeMillis() + ".jpg")
-        //intent.putExtra(MediaStore.EXTRA_OUTPUT, clipPath)
         intent.putExtra("return-data", false)
         intent.putExtra("output", clipPath);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
@@ -341,7 +340,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     fun textClick(v: View) {
         val textEditorDialogFragment = TextEditorDialogFragment.show(this)
         textEditorDialogFragment.setOnTextEditorListener { inputText, colorCode ->
-//            val resultBitmap = Bitmap.createBitmap(picture.width, picture.height, picture.config)
             val resultBitmap = Bitmap.createBitmap(mBitmap.width, mBitmap.height, mBitmap.config)
             val canvas = Canvas(resultBitmap)
 
@@ -367,9 +365,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
             )
 
             custom.setBitmap(resultBitmap);
-//            custom.setImageBitmap(resultBitmap)
-//            text.setText(inputText)
-//            text.setTextColor(colorCode)
         }
     }
 
@@ -377,8 +372,6 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
     //tag tool
     fun tagClick(v: View) {
         val view = CustomDrawView(this);
-//        val layoutParams = LinearLayout.LayoutParams(200,200);
-//        view.layoutParams = layoutParams;
         view.setBitmap(mBitmap1)
         val mVariedGestureController = tagEdit(this, view)
         mVariedGestureController!!.setVariedListener(object :
@@ -402,10 +395,8 @@ class photoEdit : AppCompatActivity(), FilterListFragmentListener, TuneImageFrag
 
         root.addView(view);
     }
-    //tag tool
 
     fun rotateClick(v: View) {
-//        dir = (dir - 90) % 360
         var dir = -90
         val resultBitmap = convert(resultPicture, dir)
 

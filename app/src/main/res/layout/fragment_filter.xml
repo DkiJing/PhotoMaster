@@ -4,8 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".fragments.filterFragment">
-
-    <!-- TODO: Update blank fragment layout -->
     <View
         android:id="@+id/filterView"
         android:layout_width="match_parent"
