@@ -5,4 +5,3 @@ Funny image processing application on android plantform.
 + Emotion detection  
 + Besic crop, rotate, text adding functions  
 + Tune brightness, saturation, contrast  
-Welcome star this cool project!!!
