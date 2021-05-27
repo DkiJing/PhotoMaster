@@ -1,5 +1,5 @@
 # PhotoMaster
-Funny image processing application on android plantform.  
+Funny image processing application on android platform.  
 + Image filter 
 + Image super resolution 
 + Emotion detection  
